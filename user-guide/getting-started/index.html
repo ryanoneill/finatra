@@ -76,13 +76,13 @@
 
           <div>
 <article role="article">
-  
-  <header>
-    <h1 class="entry-title">Getting Started</h1>
-    
-  </header>
-  
-  <p>Finatra at it&rsquo;s core is agnostic to the <em>type</em> of service being created. It can be used for anything based on <a href="https://github.com/twitter/util">twitter/util</a>: <a href="https://github.com/twitter/util/blob/develop/util-app/src/main/scala/com/twitter/app/App.scala" title="">com.twitter.app.App</a>. Finatra builds on top of the <a href="http://twitter.github.io/twitter-server/Features.html">features</a> of <a href="http://twitter.github.io/twitter-server/">TwitterServer</a> and <a href="https://twitter.github.io/finagle">Finagle</a> by allowing you to easily define a <a href="http://twitter.github.io/finagle/guide/Servers.html">Server</a> and controllers (a <a href="http://twitter.github.io/finagle/guide/ServicesAndFilters.html#services">Service</a>-like abstraction) which define and handle endpoints of the Server. You can also compose <a href="http://twitter.github.io/finagle/guide/ServicesAndFilters.html#filters">Filters</a> either per controller, per route in a controller, or across controllers.</p>
+  <ol class="breadcrumb">
+  <li><a href="/finatra/user-guide">User Guide</a></li>
+  <li class="active">Getting Started</li>
+</ol>
+
+
+<p>Finatra at it&rsquo;s core is agnostic to the <em>type</em> of service being created. It can be used for anything based on <a href="https://github.com/twitter/util">twitter/util</a>: <a href="https://github.com/twitter/util/blob/develop/util-app/src/main/scala/com/twitter/app/App.scala" title="">com.twitter.app.App</a>. Finatra builds on top of the <a href="http://twitter.github.io/twitter-server/Features.html">features</a> of <a href="http://twitter.github.io/twitter-server/">TwitterServer</a> and <a href="https://twitter.github.io/finagle">Finagle</a> by allowing you to easily define a <a href="http://twitter.github.io/finagle/guide/Servers.html">Server</a> and controllers (a <a href="http://twitter.github.io/finagle/guide/ServicesAndFilters.html#services">Service</a>-like abstraction) which define and handle endpoints of the Server. You can also compose <a href="http://twitter.github.io/finagle/guide/ServicesAndFilters.html#filters">Filters</a> either per controller, per route in a controller, or across controllers.</p>
 
 <h2>Basics</h2>
 
@@ -134,7 +134,9 @@
 
 <hr />
 
-<p>We provide a <a href="https://github.com/twitter/finatra/blob/master/inject/inject-core/src/main/scala/com/twitter/inject/TwitterModule.scala">TwitterModule</a> base class which extends the capabilities of the excellent Scala extensions for Google Guice provided by <a href="https://github.com/codingwell/scala-guice">codingwell/scala-guice</a>.</p>
+<p>Modules are used in conjunction with Guice dependency injection to specify <em>how</em> to instantiate an instance of a given type. They are especially useful when instantiation of an instance is dependent on some type of external configuration (see: <a href="/finatra/user-guide/getting-started#flags">Flags</a>).</p>
+
+<p>We provide a <a href="https://github.com/twitter/finatra/blob/master/inject/inject-core/src/main/scala/com/twitter/inject/TwitterModule.scala">TwitterModule</a> base class which extends the capabilities of the excellent Scala extensions for Google Guice provided by <a href="https://github.com/codingwell/scala-guice">codingwell/scala-guice</a>. Modules also have a hook into the Server lifecycle through the <a href="https://github.com/twitter/finatra/blob/master/inject/inject-core/src/main/scala/com/twitter/inject/TwitterModuleLifecycle.scala">TwitterModuleLifecycle</a> which allows for a Module to specify startup and shutdown functionality that is re-usable and scoped to the context of the Module. For example, the framework uses the <code>singletonStartup</code> lifecycle method in the <a href="https://github.com/twitter/finatra/blob/master/slf4j/src/main/scala/com/twitter/finatra/logging/modules/Slf4jBridgeModule.scala#L7"><code>Slf4jBridgeModule</code></a> to install the <a href="http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html"><code>SLF4JBridgeHandler</code></a> (see: <a href="/finatra/user-guide/logging">Logging</a>).</p>
 
 <h4>Module Definition</h4>
 
@@ -143,7 +145,7 @@
 <li>Prefer using an <code>@Provides</code> methods over using the <a href="https://github.com/google/guice/wiki/InstanceBindings"><em>toInstance</em> bind DSL</a>.</li>
 <li>Usually modules are Scala <em>objects</em> since they contain no state and usage of the module is less verbose.</li>
 <li>Remember to add <code>@Singleton</code> to your <code>@Provides</code> method if you require only <strong>one</strong> instance per JVM process.</li>
-<li>Generally, modules are only required for creating classes that you don&rsquo;t control. Otherwise, you would simply add the <a href="https://github.com/google/guice/wiki/JSR330">JSR-330</a> annotations directly to the class. For example, suppose you need to create an <code>ThirdPartyFoo</code> class which comes from a thirdparty jar. You could create the following Guice module to construct a singleton <code>ThirdPartyFoo</code> class which is created with a key provided through a command line flag.</li>
+<li>Generally, modules are only required for instantiating classes that you don&rsquo;t control. Otherwise, you would simply add the <a href="https://github.com/google/guice/wiki/JSR330">JSR-330</a> annotations directly to the class. For example, suppose you need to create an <code>ThirdPartyFoo</code> class which comes from a thirdparty jar. You could create the following Guice module to construct a singleton <code>ThirdPartyFoo</code> class which is created with a key provided through a command line flag.</li>
 </ul>
 
 
@@ -217,7 +219,7 @@
 
 <hr />
 
-<p>Finatra supports the use of <a href="https://github.com/twitter/util">twitter/util</a> flags as supported within the <a href="http://twitter.github.io/twitter-server/Features.html#flags">twitter-server</a> lifecycle. Flags by their definition, generally represent some external configuration that is passed to the system and thus are an excellent way to parameterize external configuration that may be environment specific, e.g., a database host or URL that is different per environment: <em>production</em>, from <em>staging</em>, or <em>development</em>.</p>
+<p>Finatra supports the use of <a href="https://github.com/twitter/util">TwitterUtil</a> flags as supported within the <a href="http://twitter.github.io/twitter-server/Features.html#flags">TwitterServer</a> lifecycle. Flags by their definition, generally represent some external configuration that is passed to the system and thus are an excellent way to parameterize external configuration that may be environment specific, e.g., a database host or URL that is different per environment, <em>production</em>, <em>staging</em>, or <em>development</em>.</p>
 
 <p>This type of configuration parameterization is generally preferred over hardcoding logic by a type of &ldquo;<em>environment</em>&rdquo; String within code. As such, flags are generally defined within a <a href="#module">Module</a> to allow for scoping of reusable external configuration. In this way, flags can be used to aid in the construction of an instance to be provided to the object graph, e.g., a DatabaseConnection instance that use the database URL flag as an input. The module is then able to tell Guice how to provide this object when injected by defining an <code>@Provides</code> annotated method.</p>
 
@@ -315,10 +317,16 @@ For example, instead of setting the <code>-maxRequestSize</code> flag, you can o
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3><a name="futures" href="#futures">Futures</a> (<code>com.twitter.util.Future</code> vs. <code>scala.concurrent.Future</code>)</h3>
+
+<hr />
+
+<p>Finatra (like other frameworks based on <a href="https://twitter.github.io/finagle">Finagle</a>) uses <a href="https://github.com/twitter/util">TwitterUtil&rsquo;s</a> <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a> class. Twitter&rsquo;s <code>com.twitter.util.Future</code> is similar to but predates <a href="http://docs.scala-lang.org/overviews/core/futures.html">Scala&rsquo;s</a> <a href="http://www.scala-lang.org/api/current/index.html#scala.concurrent.Future"><code>scala.concurrent.Future</code></a> (introduced in Scala 2.10 and later backported to Scala 2.9.3) and is <em>not</em> compatible without using <a href="https://github.com/twitter/bijection">bijections</a> to transform one into the other. It is important to remember that Finatra uses and expects <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a>.</p>
+
 <p><nav>
   <ul class="pager">
     <li></li>
-    <li class="next"><a href="/finatra/user-guide/build-new-http-server">&nbsp;Building&nbsp;a&nbsp;new&nbsp;HTTP&nbsp;Server<span aria-hidden="true">&rarr;</span></a></li>
+    <li class="next"><a href="/finatra/user-guide/build-new-http-server">&nbsp;Building&nbsp;a&nbsp;new&nbsp;HTTP&nbsp;Server&nbsp;<span aria-hidden="true">&rarr;</span></a></li>
   </ul>
 </nav></p>
 

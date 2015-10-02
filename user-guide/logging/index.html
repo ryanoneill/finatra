@@ -76,15 +76,15 @@
 
           <div>
 <article role="article">
-  
-  <header>
-    <h1 class="entry-title">Logging</h1>
-    
-  </header>
-  
-  <p>Finatra uses <a href="http://www.slf4j.org/manual.html">SLF4J</a> for framework logging. By coupling the framework to only the SLF4J-api, application developers are free to choose their logging implementation.</p>
+  <ol class="breadcrumb">
+  <li><a href="/finatra/user-guide">User Guide</a></li>
+  <li class="active">Logging</li>
+</ol>
 
-<h5>From the <a href="http://www.slf4j.org/manual.html">SLF4J</a> documentation:</h5>
+
+<p>Finatra uses the <a href="http://www.slf4j.org/manual.html">SLF4J</a> api for framework logging. By coupling the framework to only the <a href="http://www.slf4j.org/manual.html">SLF4J</a> api, application developers are free to choose their logging implementation.</p>
+
+<h5>From the SLF4J documentation:</h5>
 
 <blockquote><p>&ldquo;The Simple Logging Facade for Java serves as a simple facade or abstraction for various logging frameworks, such as java.util.logging, Logback and log4j. SLF4J allows the end-user to plug in the desired logging framework at deployment time.&rdquo;</p></blockquote>
 
@@ -98,18 +98,22 @@
 </ul>
 
 
-<pre><code class="``scala">  class Server extends HttpServer {
-    override val modules = Seq(
-      Slf4jBridgeModule,
-      ...)
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">Server</span> <span class="k">extends</span> <span class="nc">HttpServer</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">modules</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span>
+</span><span class='line'>    <span class="nc">Slf4jBridgeModule</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    ...
-  }
-</code></pre>
 
 <h2>Basics</h2>
 
-<p>Since SLF4J is an interface, it requires an actual logging implementation. Howver, you should ensure that you do not end-up with <em>multiple</em> logging implementations on your classpath, e.g., you should not have multiple SLF4J bindings (slf4j-nop, slf4j-log4j12, slf4j-jdk14, etc.) and/or a java.util.logging implementation, etc. on your classpath as these are all competing implementations and since classpath order is non-deterministic this will lead to unexpected logging behavior.</p>
+<p>Since <a href="http://www.slf4j.org/manual.html">SLF4J</a> is an interface, it requires an actual logging implementation. However, you should ensure that you do not end-up with <em>multiple</em> logging implementations on your classpath, e.g., you should not have multiple SLF4J bindings (<code>slf4j-nop</code>, <code>slf4j-log4j12</code>, <code>slf4j-jdk14</code>, etc.) and/or a java.util.logging implementation, etc. on your classpath as these are all competing implementations and since classpath order is non-deterministic this will lead to unexpected logging behavior.</p>
 
 <p>While there are several scala-wrappers for SLF4J, Finatra uses and exposes some additional features on top of the excellent <a href="http://software.clapper.org/grizzled-slf4j/">grizzled-slf4j</a> project.</p>
 
@@ -138,23 +142,29 @@
 
 <hr />
 
-<p>We highly recommend using <a href="http://logback.qos.ch/">Logback</a> as an SLF4J binding (logging implementation). If you choose to use Logback, just include jar dependencies on <code>ch.qos.logback:logback-classic</code> in addition to <code>com.twitter.finatra:finatra-slf4j</code>. This will provide a Logback SLF4J implementation (<code>logback-classic</code>) in addition to the logging bridges provided by finatra/slf4j.</p>
+<p>We highly recommend using <a href="http://logback.qos.ch/">Logback</a> as an SLF4J binding (logging implementation). If you choose to use Logback, just include jar dependencies on <code>ch.qos.logback:logback-classic</code> in addition to <code>com.twitter.finatra:finatra-slf4j_{scala-version}</code>. This will provide a Logback SLF4J implementation (<code>logback-classic</code>) in addition to the logging bridges provided by the <a href="https://github.com/twitter/finatra/tree/master/slf4j"><code>finatra/slf4j</code></a> module.</p>
 
 <h3>Configuration</h3>
 
 <hr />
 
-<p>See <a href="https://github.com/twitter/finatra/tree/master/examples/hello-world/src/main/resources/logback.xml">logback.xml</a> and <a href=".https://github.com/twitter/finatra/tree/master/examples/hello-world/src/test/resources/logback-test.xml">logback-test.xml</a> in the <a href="https://github.com/twitter/finatra/tree/master/examples/hello-world">hello-world</a> example project.</p>
+<p>See <a href="https://github.com/twitter/finatra/tree/master/examples/hello-world/src/main/resources/logback.xml">logback.xml</a> and <a href=".https://github.com/twitter/finatra/tree/master/examples/hello-world/src/test/resources/logback-test.xml">logback-test.xml</a> in the <a href="https://github.com/twitter/finatra/tree/master/examples/hello-world">hello-world</a> example project for example Logback configuration.</p>
 
-<h3><a href="http://logback.qos.ch/manual/mdc.html">MDC</a> Filters</h3>
+<p>See the <a href="http://logback.qos.ch/manual/configuration.html">Logback documentation on configuration</a> for more information.</p>
+
+<h3>Mapped Diagnostic Context Filter</h3>
 
 <hr />
 
+<p>Finatra offers an integration with Logback&rsquo;s <a href="http://logback.qos.ch/manual/mdc.html">Mapped Diagnostic Context</a> for logging.</p>
+
 <p>Place the <a href="https://github.com/twitter/finatra/tree/master/slf4j/src/main/scala/com/twitter/finatra/logging/filter/LoggingMDCFilter.scala">LoggingMDCFilter</a> filter before any other filters which will add entries or expect MDC entries to be present.</p>
+
+<p>See <a href="http://logback.qos.ch/manual/mdc.html">Logback&rsquo;s documentation</a> for more information the Mapped Diagnostic Context functionality.</p>
 
 <p><nav>
   <ul class="pager">
-    <li class="previous"><a href="/finatra/user-guide/build-new-http-server"><span aria-hidden="true">&larr;</span>&nbsp;Building&nbsp;a&nbsp;new&nbsp;HTTP&nbsp;Server</a></li>
+    <li class="previous"><a href="/finatra/user-guide/working-with-files"><span aria-hidden="true">&larr;</span>&nbsp;Working&nbsp;with&nbsp;Files</a></li>
     <li class="next"><a href="/finatra/user-guide/testing">Testing&nbsp;<span aria-hidden="true">&rarr;</span></a></li>
   </ul>
 </nav></p>

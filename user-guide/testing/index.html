@@ -76,13 +76,13 @@
 
           <div>
 <article role="article">
-  
-  <header>
-    <h1 class="entry-title">Testing</h1>
-    
-  </header>
-  
-  <p>Ease of testing is a core philosophy of the Finatra framework and Finatra provides a powerful testing framework allowing for very robust tests of different types.</p>
+  <ol class="breadcrumb">
+  <li><a href="/finatra/user-guide">User Guide</a></li>
+  <li class="active">Testing</li>
+</ol>
+
+
+<p>Ease of testing is a core philosophy of the Finatra framework and Finatra provides a powerful testing framework allowing for very robust tests of different types.</p>
 
 <h2>Basics</h2>
 
@@ -96,7 +96,9 @@
 </ul>
 
 
-<h2>Types of testing</h2>
+<h2><a name="testing-types" href="#testing-types">Types of Tests</a></h2>
+
+<p>What are we talking about when we talk about <em>testing</em>? At a high-level the philosophy of testing in Finatra revolves around the following testing definitions:</p>
 
 <ul>
 <li>Feature Tests, the most powerful test enabled by Finatra, allow you to verify all feature requirements of the service by exercising the external interface. Finatra supports both “blackbox testing” and “whitebox testing” against a locally running version of your server. You can selectively swap out certain classes, insert mocks, and perform assertions on internal state.</li>
@@ -110,19 +112,41 @@
 
 <hr />
 
+<p>For basic information on Modules in Finatra, see <a href="/finatra/user-guide/getting-started#modules">Modules</a>.</p>
+
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
 
 <p>Donec hendrerit lorem at hendrerit posuere. Suspendisse metus lacus, molestie ac lobortis vitae, lacinia eu eros. Morbi sodales dui id erat luctus placerat. Quisque condimentum lacinia dignissim. Donec congue lacus eu viverra imperdiet. Pellentesque id semper elit. Integer vulputate ipsum a ligula fringilla, vel blandit nisl lacinia. Sed a ultricies magna. Sed massa mauris, tincidunt non iaculis et, pulvinar at urna. Vivamus placerat, mauris luctus lobortis malesuada, urna neque semper sem, a accumsan risus leo at tellus. Nulla et lobortis lectus, non vulputate nibh.</p>
+
+<h2><a name="test-helpers" href="#test-helpers">Test Helper Classes</a></h2>
+
+<p><img src="/finatra/images/FinatraTesting.png" alt="Finatra Test classes" /></p>
+
+<p>The Finatra testing framework uses the <a href="http://www.scalatest.org/">ScalaTest</a> testing framework and to facilitate the types of testing outlined above we have several testing traits to aid in creating simple and powerful tests.</p>
 
 <h3><a href="http://blog.mattwynne.net/2010/10/22/features-user-stories/">Feature Tests</a></h3>
 
 <p>see: <a href="https://github.com/twitter/finatra/blob/master/inject/inject-app/src/test/scala/com/twitter/inject/app/FeatureTest.scala">app/FeatureTest</a> and <a href="https://github.com/twitter/finatra/blob/master/inject/inject-server/src/test/scala/com/twitter/inject/server/FeatureTest.scala">server/FeatureTest</a></p>
 
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+
 <h3>Integration Tests</h3>
 
 <p>see: TestInjector</p>
 
-<h3>Startup Tests</h3>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+
+<h3>Http Tests</h3>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+
+<h3><code>com.twitter.inject.Mockito</code></h3>
+
+<p>Provides <a href="https://etorreborre.github.io/specs2/">Specs2</a> Mockito syntax sugar for <a href="http://www.scalatest.org/">ScalaTest</a>.</p>
+
+<p>This is a drop-in replacement for org.specs2.mock.Mockito. We encourage you to not use <code>org.specs2.mock.Mockito</code> directly. Otherwise, match failures won&rsquo;t be  propagated up as ScalaTest test failures.</p>
+
+<h2>Startup Tests</h2>
 
 <p>We recommend creating a simple test to check that your service can start up and report itself as healthy. This checks the correctness of the Guice dependency graph, catching errors that can otherwise cause the service to fail to start.</p>
 

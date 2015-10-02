@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>JSON - Finatra</title>
+    <title>Working With JSON - Finatra</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:800">
     <link rel="stylesheet" type="text/css" href="/finatra/javascripts/highlight/styles/idea.css">
@@ -76,19 +76,19 @@
 
           <div>
 <article role="article">
-  
-  <header>
-    <h1 class="entry-title">JSON</h1>
-    
-  </header>
-  
-  <h3>Basics</h3>
+  <ol class="breadcrumb">
+  <li><a href="/finatra/user-guide">User Guide</a></li>
+  <li class="active">Working With JSON</li>
+</ol>
+
+
+<h2>Basics</h2>
 
 <hr />
 
 <p>Finatra improves on the already excellent <a href="https://github.com/FasterXML/jackson-module-scala">jackson-module-scala</a>. JSON support is provided in the [finatra-jackson][finatra-jackson] library, which can be used outside of Finatra HTTP as a replacement for <a href="https://github.com/FasterXML/jackson-module-scala">jackson-scala-module</a> or <a href="https://github.com/codahale/jerkson">jerkson</a>.</p>
 
-<h4>Features</h4>
+<h3>Features</h3>
 
 <ul>
 <li>Usable outside of Finatra.</li>
@@ -103,7 +103,7 @@
 * Utils for comparing json in tests.
 * Experimental support for iterator based json stream parsing.</p>
 
-<h3>Configuration</h3>
+<h2>Configuration</h2>
 
 <hr />
 
@@ -122,7 +122,7 @@
 </ul>
 
 
-<h3><a name="jackson-customization">Customization</a></h3>
+<h2><a name="jackson-customization">Customization</a></h2>
 
 <hr />
 
@@ -169,7 +169,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3><a name="case-class-deserializer">Improved <code>case class</code> deserializer</a></h3>
+<h2><a name="case-class-deserializer">Improved <code>case class</code> deserializer</a></h2>
 
 <hr />
 
@@ -181,11 +181,11 @@
 * Support for accumulating JSON parsing errors (instead of failing fast).
 * Support for field and method level validations which also accumulate errors.</p>
 
-<h3>Integration with Routing</h3>
+<h2><a name="routing-json" href="#routing-json>Integration with Routing</a></h2>
 
 <hr />
 
-<p>If a custom <code>case class</code> is used as a route callback&rsquo;s input type, Finatra will parse the request body into the custom request. Similar to declaratively parsing a GET request (described above), Finatra will perform validations and return a 400 BadRequest with a list of the accumulated errors (in JSON format).</p>
+<p>If a custom <code>case class</code> is used as a route callback&rsquo;s input type Finatra will parse the request body into the custom request class. Similar to declaratively parsing a <code>GET</code> request (described above), Finatra will perform validations and return a <code>400 BadRequest</code> with a list of any accumulated errors in JSON format.</p>
 
 <p>Suppose you wanted to handle POST&rsquo;s of the following JSON (representing a group of tweet ids):</p>
 
@@ -210,7 +210,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then you&rsquo;d create the following <a name="group-request-example"><code>case classes</code></a></p>
+<p>You would create and use the following <a name="group-request-example"><code>case classes</code></a></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -249,7 +249,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>Validation Framework</h3>
+<h2>Validation Framework</h2>
 
 <hr />
 
@@ -296,6 +296,13 @@
 <li><code>@JsonValue</code>: Useful to place on an overridden toString method</li>
 </ul>
 
+
+<p><nav>
+  <ul class="pager">
+    <li class="previous"><a href="/finatra/user-guide/build-new-http-server"><span aria-hidden="true">&larr;</span>&nbsp;Building&nbsp;a&nbsp;new&nbsp;HTTP&nbsp;Server</a></li>
+    <li class="next"><a href="/finatra/user-guide/working-with-files">Working&nbsp;with&nbsp;Files&nbsp;<span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav></p>
 
   
     <footer>
