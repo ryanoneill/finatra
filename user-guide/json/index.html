@@ -173,7 +173,7 @@
 
 <hr />
 
-<p>Finatra provides a custom <code>case class</code> deserializer which overcomes limitations in jackson-scala-module:
+<p>Finatra provides a custom <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/internal/caseclass/jackson/FinatraCaseClassDeserializer.scala"><code>case class</code> deserializer</a> which overcomes limitations in jackson-scala-module:
 * Throw a JsonException when &lsquo;non Option&rsquo; fields are missing in the incoming json
 * Use default values when fields are missing in the incoming json
 * Properly deserialize a Seq[Long] (see <a href="https://github.com/FasterXML/jackson-module-scala/issues/62">https://github.com/FasterXML/jackson-module-scala/issues/62</a>)
