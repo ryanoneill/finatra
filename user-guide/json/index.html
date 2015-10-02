@@ -181,7 +181,7 @@
 * Support for accumulating JSON parsing errors (instead of failing fast).
 * Support for field and method level validations which also accumulate errors.</p>
 
-<h2><a name="routing-json" href="#routing-json>Integration with Routing</a></h2>
+<h2><a name="routing-json" href="#routing-json">Integration with Routing</a></h2>
 
 <hr />
 
@@ -253,7 +253,7 @@
 
 <hr />
 
-<p>We provide a simple validation framework inspired by <a href="https://github.com/google/guice/wiki/JSR330">JSR-330</a>. Our framework integrates with our custom <code>case class</code> deserializer to efficiently apply per field validations as request parsing is performed. The following validations are included, and additional validations can be provided:</p>
+<p>We provide a simple validation framework inspired by <a href="https://github.com/google/guice/wiki/JSR330">JSR-330</a>. The validations framework integrates with the custom <code>case class</code> deserializer to efficiently apply per field validations as request parsing is performed. The following validations are included (and additional validations can be easily provided):</p>
 
 <ul>
 <li>CountryCode</li>
@@ -276,7 +276,7 @@
 <p>Can be used for:</p>
 
 <ul>
-<li>Non-generic validations &ndash; a <code>MethodValidation</code> can be used instead of defining a reusable annotation and validator.</li>
+<li>Non-generic validations. <code>MethodValidation</code> can be used instead of defining a reusable annotation and validator.</li>
 <li>Cross-field validations (e.g. <code>startDate</code> before <code>endDate</code>)</li>
 </ul>
 
