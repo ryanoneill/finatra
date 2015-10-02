@@ -126,7 +126,7 @@
 <div></div>
 
 
-<p>Simplistically, a server can be thought of as a collection of <a href="/finatra/user-guide/getting-started#modules">modules</a> along with the ways controllers are routed to and filtered. The Finatra convention is to create a Scala <a href="https://twitter.github.io/scala_school/basics2.html#object"><em>object</em></a> with a name ending in &ldquo;Main&rdquo;. This allows your server to be instantiated multiple times in tests without worrying about static state persisting across test runs in the same JVM. <code>ExampleServerMain</code> is then a static object which contains the runnable <em>main method</em> for the server.</p>
+<p>Simplistically, a server can be thought of as a collection of <a href="#add-controller">controllers</a> composed with <a href="#add-filters">filters</a>. Additionally, a server can define what  <a href="/finatra/user-guide/getting-started#modules">modules</a> to use and how to <a href="#exception-mapper">map exceptions</a>. The Finatra convention is to create a Scala <a href="https://twitter.github.io/scala_school/basics2.html#object"><em>object</em></a> with a name ending in &ldquo;Main&rdquo;. This allows your server to be instantiated multiple times in tests without worrying about static state persisting across test runs in the same JVM. <code>ExampleServerMain</code> is then a static object which contains the runnable <em>main method</em> for the server.</p>
 
 <h3>TwitterServer HTTP Admin Interface</h3>
 
