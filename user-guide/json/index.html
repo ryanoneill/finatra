@@ -86,22 +86,22 @@
 
 <hr />
 
-<p>Finatra improves on the already excellent <a href="https://github.com/FasterXML/jackson-module-scala">jackson-module-scala</a>. JSON support is provided in the <a href="https://github.com/FasterXML/jackson">finatra-jackson</a> library, which can be used outside of Finatra HTTP as a replacement for <a href="https://github.com/FasterXML/jackson-module-scala">jackson-scala-module</a> or <a href="https://github.com/codahale/jerkson">jerkson</a>.</p>
+<p>Finatra improves on the already excellent <a href="https://github.com/FasterXML/jackson-module-scala">jackson-module-scala</a>. JSON support is provided in the <a href="https://github.com/FasterXML/jackson">finatra-jackson</a> library which can be used outside of Finatra as a replacement for the <a href="https://github.com/FasterXML/jackson-module-scala">jackson-scala-module</a> or <a href="https://github.com/codahale/jerkson">jerkson</a>.</p>
 
 <h3>Features</h3>
 
 <ul>
 <li>Usable outside of Finatra.</li>
-<li><a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/FinatraObjectMapper.scala"><code>FinatraObjectMapper</code></a> which provides additional Scala friendly methods not found in <code>ScalaObjectMapper</code>.</li>
-<li>Guice module for injecting <code>FinatraObjectMapper</code> (with support for customization e.g. snake_case vs camelCase).</li>
-<li>Custom <code>case class</code> deserializer which overcomes limitations in jackson-scala-module.</li>
-<li>Support for <code>case class</code> validations which accumulate errors (without failing fast) during json parsing.</li>
+<li><a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/FinatraObjectMapper.scala"><code>FinatraObjectMapper</code></a> which provides additional Scala friendly methods not found in the <code>ScalaObjectMapper</code>.</li>
+<li><a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/modules/FinatraJacksonModule.scala">Guice module</a> for injecting <code>FinatraObjectMapper</code> (with support for customization e.g. snake_case vs camelCase).</li>
+<li>Custom <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/internal/caseclass/jackson/FinatraCaseClassDeserializer.scala"><code>case class</code> deserializer</a> which overcomes limitations in jackson-scala-module.</li>
+<li>Support for <code>case class</code> validations which accumulate errors (without failing fast) during JSON parsing.</li>
 </ul>
 
 
-<p>Integration with Finatra HTTP routing to support binding and validation of query params, route params, and headers.
-* Utils for comparing json in tests.
-* Experimental support for iterator based json stream parsing.</p>
+<p>Integration with Finatra <a href="/finatra/user-guide/routing-json">HTTP routing</a> to support binding and validation of query params, route params, and headers.
+* Utils for comparing JSON in tests.
+* Experimental support for iterator based JSON stream parsing.</p>
 
 <h2>Configuration</h2>
 
