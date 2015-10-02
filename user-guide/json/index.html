@@ -96,12 +96,11 @@
 <li><a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/modules/FinatraJacksonModule.scala">Guice module</a> for injecting <code>FinatraObjectMapper</code> (with support for customization e.g. snake_case vs camelCase).</li>
 <li>Custom <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/internal/caseclass/jackson/FinatraCaseClassDeserializer.scala"><code>case class</code> deserializer</a> which overcomes limitations in jackson-scala-module.</li>
 <li>Support for <code>case class</code> validations which accumulate errors (without failing fast) during JSON parsing.</li>
+<li>Integration with Finatra <a href="/finatra/user-guide/routing-json">HTTP routing</a> to support binding and validation of query params, route params, and headers.</li>
+<li>Utils for comparing JSON in tests.</li>
+<li>Experimental support for iterator based JSON stream parsing.</li>
 </ul>
 
-
-<p>Integration with Finatra <a href="/finatra/user-guide/routing-json">HTTP routing</a> to support binding and validation of query params, route params, and headers.
-* Utils for comparing JSON in tests.
-* Experimental support for iterator based JSON stream parsing.</p>
 
 <h2>Configuration</h2>
 
@@ -169,23 +168,27 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2><a name="case-class-deserializer">Improved <code>case class</code> deserializer</a></h2>
+<h2>Improved <code>case class</code> deserializer</h2>
 
 <hr />
 
-<p>Finatra provides a custom <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/internal/caseclass/jackson/FinatraCaseClassDeserializer.scala"><code>case class</code> deserializer</a> which overcomes limitations in jackson-scala-module:
-* Throw a JsonException when &lsquo;non Option&rsquo; fields are missing in the incoming json
-* Use default values when fields are missing in the incoming json
-* Properly deserialize a Seq[Long] (see <a href="https://github.com/FasterXML/jackson-module-scala/issues/62">https://github.com/FasterXML/jackson-module-scala/issues/62</a>)
-* Support &ldquo;wrapped values&rdquo; using <code>WrappedValue</code> (this is needed since jackson-scala-module does not support <code>@JsonCreator</code>)
-* Support for accumulating JSON parsing errors (instead of failing fast).
-* Support for field and method level validations which also accumulate errors.</p>
+<p>Finatra provides a custom <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/json/internal/caseclass/jackson/FinatraCaseClassDeserializer.scala"><code>case class</code> deserializer</a> which overcomes limitations in jackson-scala-module:</p>
+
+<ul>
+<li>Throws a <code>JsonException</code> when non-optional fields are missing from the parsed JSON.</li>
+<li>Use default values when fields are missing in the incoming JSON.</li>
+<li>Properly deserialize a <code>Seq[Long]</code> (see <a href="https://github.com/FasterXML/jackson-module-scala/issues/62">https://github.com/FasterXML/jackson-module-scala/issues/62</a>).</li>
+<li>Support &ldquo;wrapped values&rdquo; using <code>WrappedValue</code> (this is needed since jackson-scala-module does not support <code>@JsonCreator</code>).</li>
+<li>Support for accumulating JSON parsing errors (instead of failing fast).</li>
+<li>Support for field and method level validations which also accumulate errors.</li>
+</ul>
+
 
 <h2><a name="routing-json" href="#routing-json">Integration with Routing</a></h2>
 
 <hr />
 
-<p>If a custom <code>case class</code> is used as a route callback&rsquo;s input type Finatra will parse the request body into the custom request class. Similar to declaratively parsing a <code>GET</code> request (described above), Finatra will perform validations and return a <code>400 BadRequest</code> with a list of any accumulated errors in JSON format.</p>
+<p>If a custom <code>case class</code> is used as a route callback&rsquo;s input type, Finatra will parse the request body into the custom request class. Similar to declaratively parsing a <code>GET</code> request (described above), Finatra will perform validations and return a <code>400 BadRequest</code> with a list of any accumulated errors in JSON format.</p>
 
 <p>Suppose you wanted to handle POST&rsquo;s of the following JSON (representing a group of tweet ids):</p>
 

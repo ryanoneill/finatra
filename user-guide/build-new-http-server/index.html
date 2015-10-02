@@ -472,9 +472,9 @@
 <ul>
 <li>If you return a <code>com.twitter.util.Future[Response]</code>, then no conversion will be performed.</li>
 <li>A non <code>com.twitter.util.Future</code> return value will be converted into a <code>com.twitter.util.Future</code> using a Finatra provided <code>FuturePool</code>.</li>
-<li><code>Some[T]</code> will be converted into a HTTP 200 OK.</li>
-<li><code>None</code> will be converted into a HTTP 404 NotFound.</li>
-<li>Non-response classes will be converted into a HTTP 200 OK.</li>
+<li><code>Some[T]</code> will be converted into a HTTP <code>200 OK</code>.</li>
+<li><code>None</code> will be converted into a HTTP <code>404 NotFound</code>.</li>
+<li>Non-response classes will be converted into a HTTP <code>200 OK</code>.</li>
 </ul>
 
 
