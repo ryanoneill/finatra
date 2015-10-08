@@ -42,6 +42,8 @@
         font-weight: 800;
         font-size: 84px !important;
       }
+
+      .anchor { padding-top: 60px; }
     </style>
     <link rel="shortcut icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
     <link rel="icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
@@ -130,7 +132,7 @@
 <div></div>
 
 
-<h3><a name="modules" href="#modules">Modules</a></h3>
+<h3><a class="anchor" name="modules">Modules</a></h3>
 
 <hr />
 
@@ -215,11 +217,11 @@
 <div></div>
 
 
-<h3><a name="flags" href="#flags">Flags</a></h3>
+<h3><a class="anchor" name="flags">Flags</a></h3>
 
 <hr />
 
-<p>Finatra supports the use of <a href="https://github.com/twitter/util">TwitterUtil</a> flags as supported within the <a href="http://twitter.github.io/twitter-server/Features.html#flags">TwitterServer</a> lifecycle. Flags by their definition, generally represent some external configuration that is passed to the system and thus are an excellent way to parameterize external configuration that may be environment specific, e.g., a database host or URL that is different per environment, <em>production</em>, <em>staging</em>, or <em>development</em>.</p>
+<p>Finatra supports the use of <a href="https://github.com/twitter/util">twitter/util</a> <a href="https://github.com/twitter/util/blob/develop/util-app/src/main/scala/com/twitter/app/Flag.scala">Flags</a> as supported within the <a href="http://twitter.github.io/twitter-server/Features.html#flags">TwitterServer</a> lifecycle. Flags by their definition represent some external configuration that is passed to the system and are thus an excellent way to parameterize external configuration that may be environment specific, e.g., a database host or URL that is different per environment, <em>production</em>, <em>staging</em>, or <em>development</em>.</p>
 
 <p>This type of configuration parameterization is generally preferred over hardcoding logic by a type of &ldquo;<em>environment</em>&rdquo; String within code. As such, flags are generally defined within a <a href="#module">Module</a> to allow for scoping of reusable external configuration. In this way, flags can be used to aid in the construction of an instance to be provided to the object graph, e.g., a DatabaseConnection instance that use the database URL flag as an input. The module is then able to tell Guice how to provide this object when injected by defining an <code>@Provides</code> annotated method.</p>
 
@@ -283,33 +285,6 @@
 <div></div>
 
 
-<h4><a name="setting-flags-from-code" href="#setting-flags-from-code">Setting flags from code</a> (<a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/internal/server/BaseHttpServer.scala">HttpServer</a>, only)</h4>
-
-<p>Some deployment environments may make it difficult to set command line flags. If this is the case, Finatra&rsquo;s <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/HttpServer.scala">HttpServer</a>&rsquo;s core flags can be set from code.
-For example, instead of setting the <code>-maxRequestSize</code> flag, you can override the following method in your server.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">TweetsEndpointServer</span> <span class="k">extends</span> <span class="nc">HttpServer</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">defaultMaxRequestSize</span> <span class="k">=</span> <span class="mf">10.</span><span class="n">megabytes</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">configureHttp</span><span class="o">(</span><span class="n">router</span><span class="k">:</span> <span class="kt">HttpRouter</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<div></div>
-
-
 <p>Use the <code>-help</code> flag to see usage for running a Finatra server, e.g.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -317,11 +292,14 @@ For example, instead of setting the <code>-maxRequestSize</code> flag, you can o
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3><a name="futures" href="#futures">Futures</a> (<code>com.twitter.util.Future</code> vs. <code>scala.concurrent.Future</code>)</h3>
+<div></div>
+
+
+<h3><a class="anchor" name="futures">Futures</a> (<code>com.twitter.util.Future</code> vs. <code>scala.concurrent.Future</code>)</h3>
 
 <hr />
 
-<p>Finatra (like other frameworks based on <a href="https://twitter.github.io/finagle">Finagle</a>) uses <a href="https://github.com/twitter/util">TwitterUtil&rsquo;s</a> <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a> class. Twitter&rsquo;s <code>com.twitter.util.Future</code> is similar to but predates <a href="http://docs.scala-lang.org/overviews/core/futures.html">Scala&rsquo;s</a> <a href="http://www.scala-lang.org/api/current/index.html#scala.concurrent.Future"><code>scala.concurrent.Future</code></a> (introduced in Scala 2.10 and later backported to Scala 2.9.3) and is <em>not</em> compatible without using <a href="https://github.com/twitter/bijection">bijections</a> to transform one into the other. It is important to remember that Finatra uses and expects <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a>.</p>
+<p>Finatra, like other frameworks based on Twitter&rsquo;s <a href="https://twitter.github.io/finagle">Finagle</a>, uses the <a href="https://github.com/twitter/util">twitter/util</a> <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a> class. Twitter&rsquo;s <code>com.twitter.util.Future</code> is similar to, but predates, <a href="http://docs.scala-lang.org/overviews/core/futures.html">Scala&rsquo;s</a> <a href="http://www.scala-lang.org/api/current/index.html#scala.concurrent.Future"><code>scala.concurrent.Future</code></a> (introduced in Scala 2.10 and later backported to Scala 2.9.3) and is <em>not</em> compatible without using <a href="https://github.com/twitter/bijection">bijections</a> to transform one into the other. It is important to remember that Finatra uses and expects <a href="https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Future.scala"><code>com.twitter.util.Future</code></a>.</p>
 
 <p><nav>
   <ul class="pager">

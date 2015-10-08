@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Working With JSON - Finatra</title>
+    <title>Working with JSON - Finatra</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:800">
     <link rel="stylesheet" type="text/css" href="/finatra/javascripts/highlight/styles/idea.css">
@@ -42,6 +42,8 @@
         font-weight: 800;
         font-size: 84px !important;
       }
+
+      .anchor { padding-top: 60px; }
     </style>
     <link rel="shortcut icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
     <link rel="icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
@@ -78,7 +80,7 @@
 <article role="article">
   <ol class="breadcrumb">
   <li><a href="/finatra/user-guide">User Guide</a></li>
-  <li class="active">Working With JSON</li>
+  <li class="active">Working with JSON</li>
 </ol>
 
 
@@ -86,7 +88,7 @@
 
 <hr />
 
-<p>Finatra improves on the already excellent <a href="https://github.com/FasterXML/jackson-module-scala">jackson-module-scala</a>. JSON support is provided in the <a href="https://github.com/FasterXML/jackson">finatra-jackson</a> library which can be used outside of Finatra as a replacement for the <a href="https://github.com/FasterXML/jackson-module-scala">jackson-scala-module</a> or <a href="https://github.com/codahale/jerkson">jerkson</a>.</p>
+<p>Finatra improves on the already excellent <a href="https://github.com/FasterXML/jackson-module-scala">jackson-module-scala</a> for JSON support. Note that the <a href="https://github.com/FasterXML/jackson">finatra-jackson</a> library can be used outside of Finatra as a replacement for the <a href="https://github.com/FasterXML/jackson-module-scala">jackson-scala-module</a> or <a href="https://github.com/codahale/jerkson">jerkson</a>.</p>
 
 <h3>Features</h3>
 
@@ -98,11 +100,11 @@
 <li>Support for <code>case class</code> validations which accumulate errors (without failing fast) during JSON parsing.</li>
 <li>Integration with Finatra <a href="/finatra/user-guide/routing-json">HTTP routing</a> to support binding and validation of query params, route params, and headers.</li>
 <li>Utils for comparing JSON in tests.</li>
-<li>Experimental support for iterator based JSON stream parsing.</li>
+<li>Experimental support for iterator-based JSON stream parsing.</li>
 </ul>
 
 
-<h2>Configuration</h2>
+<h2><a class="anchor" name="configuration">Configuration</a></h2>
 
 <hr />
 
@@ -121,7 +123,7 @@
 </ul>
 
 
-<h2><a name="jackson-customization">Customization</a></h2>
+<h2><a class="anchor" name="jackson-customization">Customization</a></h2>
 
 <hr />
 
@@ -168,6 +170,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<div></div>
+
+
 <h2>Improved <code>case class</code> deserializer</h2>
 
 <hr />
@@ -184,7 +189,7 @@
 </ul>
 
 
-<h2><a name="routing-json" href="#routing-json">Integration with Routing</a></h2>
+<h2><a class="anchor" name="routing-json">Integration with Routing</a></h2>
 
 <hr />
 
@@ -211,6 +216,9 @@
 </span><span class='line'>  <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
 
 
 <p>You would create and use the following <a name="group-request-example"><code>case classes</code></a></p>
@@ -252,7 +260,10 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>Validation Framework</h2>
+<div></div>
+
+
+<h2><a class="anchor" name="validaton-framework">Validation Framework</a></h2>
 
 <hr />
 
@@ -288,22 +299,22 @@
 
 <p>See also: <a href="https://github.com/twitter/finatra/blob/master/jackson/src/main/scala/com/twitter/finatra/validation/CommonMethodValidations.scala">CommonMethodValidations</a></p>
 
-<h3><a name="json-best-practices">Best Practices</a></h3>
+<h3><a class="anchor" name="json-best-practices">Best Practices</a></h3>
 
 <hr />
 
 <p>Use Java Enums for representing enumerations since they integrate well with Jackson&rsquo;s ObjectMapper and now have exhaustiveness checking as of Scala 2.10. The following Jackson annotations may be useful when working with Enums:</p>
 
 <ul>
-<li><code>@JsonCreator</code>: Useful on a custom fromString method</li>
-<li><code>@JsonValue</code>: Useful to place on an overridden toString method</li>
+<li><code>@JsonCreator</code> - Useful on a custom fromString method</li>
+<li><code>@JsonValue</code> - Useful to place on an overridden toString method</li>
 </ul>
 
 
 <p><nav>
   <ul class="pager">
     <li class="previous"><a href="/finatra/user-guide/build-new-http-server"><span aria-hidden="true">&larr;</span>&nbsp;Building&nbsp;a&nbsp;new&nbsp;HTTP&nbsp;Server</a></li>
-    <li class="next"><a href="/finatra/user-guide/working-with-files">Working&nbsp;with&nbsp;Files&nbsp;<span aria-hidden="true">&rarr;</span></a></li>
+    <li class="next"><a href="/finatra/user-guide/files">Working&nbsp;with&nbsp;Files&nbsp;<span aria-hidden="true">&rarr;</span></a></li>
   </ul>
 </nav></p>
 

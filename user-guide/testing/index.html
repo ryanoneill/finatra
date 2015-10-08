@@ -42,6 +42,8 @@
         font-weight: 800;
         font-size: 84px !important;
       }
+
+      .anchor { padding-top: 60px; }
     </style>
     <link rel="shortcut icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
     <link rel="icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
@@ -82,7 +84,7 @@
 </ol>
 
 
-<p>Ease of testing is a core philosophy of the Finatra framework and Finatra provides a powerful testing framework allowing for very robust tests of different types.</p>
+<p><img src="http://imgs.xkcd.com/comics/exploits_of_a_mom.png" alt="Testing" /></p>
 
 <h2>Basics</h2>
 
@@ -96,57 +98,259 @@
 </ul>
 
 
-<h2><a name="testing-types" href="#testing-types">Types of Tests</a></h2>
+<h2><a class="anchor" name="testing-types">Types of Tests</a></h2>
 
-<p>What are we talking about when we talk about <em>testing</em>? At a high-level the philosophy of testing in Finatra revolves around the following testing definitions:</p>
+<p>What are we talking about when we talk about <em>testing</em>? At a high-level the philosophy of testing in Finatra revolves around the following definitions:</p>
 
 <ul>
-<li>Feature Tests, the most powerful test enabled by Finatra, allow you to verify all feature requirements of the service by exercising the external interface. Finatra supports both “blackbox testing” and “whitebox testing” against a locally running version of your server. You can selectively swap out certain classes, insert mocks, and perform assertions on internal state.</li>
-<li>Integration Tests, similar to feature tests, but the entire service is not started. Instead, a list of “modules” are loaded, and then method calls and assertions are performed at the class-level.</li>
-<li>Unit Tests, these are method-level tests of a single class, and the framework stays out of your way.</li>
-<li>System Tests &ndash; we also have a concept of larger system testing at a few levels. After release we run a set of blackbox tests as a client of the system, exercising as much of the code as possible to verify functionality post-release. Additionally, we run continuous data-quality testing every day alerting on inconsistencies.</li>
+<li><a href="#feature-tests">Feature Tests</a> -  the most powerful tests enabled by Finatra. These tests allow you to verify feature requirements of the service by exercising its external interface. Finatra supports both “black-box testing” and “white-box testing” against a locally running version of your server. You can selectively swap out certain classes, insert mocks, and perform assertions on internal state. It’s worth noting that we sometimes re-use these tests for regression testing in larger “System Tests” that run post-release on live services. Take a look at an example feature test <a href="https://github.com/twitter/finatra/blob/master/examples/hello-world/src/test/scala/com/twitter/hello/HelloWorldFeatureTest.scala">here</a>.</li>
+<li><a href="#integration-tests">Integration Tests</a> - similar to feature tests, but the entire service is not started. Instead, a list of <a href="/finatra/user-guide/getting-started#modules">modules</a> are loaded and then method calls and assertions are performed at the class-level. You can see an example integration test <a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/marshalling/CallbackConverterIntegrationTest.scala">here</a>.</li>
+<li>Unit Tests - these are tests of a single class and since constructor injection is used throughout the framework, Finatra stays out of your way.</li>
 </ul>
 
 
-<h2><a name="override-modules" href="#override-modules">Override Modules</a></h2>
+<h2><a href="http://www.scalatest.org/">ScalaTest</a></h2>
+
+<hr />
+
+<p>The Finatra testing framework uses the <a href="http://doc.scalatest.org/2.2.4/#org.scalatest.WordSpec"><code>WordSpec</code></a> ScalaTest <a href="http://www.scalatest.org/user_guide/selecting_a_style">testing style</a> testing style for framework testing and to facilitate the types of testing outlined above we have several testing traits to aid in creating simple and powerful tests. For more information on <a href="http://www.scalatest.org/">ScalaTest</a>, see the <a href="http://www.scalatest.org/user_guide">ScalaTest User Guide</a>. However, we recommend using (and internally use) <a href="https://etorreborre.github.io/specs2/">Specs2</a> for mocking support.</p>
+
+<h2>Working with Mocks</h2>
+
+<hr />
+
+<p><a href="https://github.com/twitter/finatra/blob/master/inject/inject-core/src/test/scala/com/twitter/inject/Mockito.scala"><code>com.twitter.inject.Mockito</code></a> provides <a href="https://etorreborre.github.io/specs2/">Specs2</a> Mockito syntax sugar for <a href="http://www.scalatest.org/">ScalaTest</a>.</p>
+
+<p>This is a drop-in replacement for <a href="http://etorreborre.github.io/specs2/guide/SPECS2-3.0/org.specs2.guide.UseMockito.html"><code>org.specs2.mock.Mockito</code></a>. We encourage you to not use <code>org.specs2.mock.Mockito</code> directly. Otherwise, match failures won&rsquo;t be propagated up as ScalaTest test failures.</p>
+
+<h2><a class="anchor" name="embedded-server">Embedded Servers/Apps</a></h2>
+
+<hr />
+
+<p>Finatra provides a way to run an embedded version of your service or app running locally on ephemeral ports. This allows you to run actual requests against an actual version of your server when testing.</p>
+
+<p>See:</p>
+
+<ul>
+<li><a href="https://github.com/twitter/finatra/blob/master/inject/inject-app/src/test/scala/com/twitter/inject/app/EmbeddedApp.scala"><code>com.twitter.inject.app.EmbeddedApp</code></a></li>
+<li><a href="https://github.com/twitter/finatra/blob/master/inject/inject-server/src/test/scala/com/twitter/inject/server/EmbeddedTwitterServer.scala"><code>com.twitter.inject.server.EmbeddedTwitterServer</code></a></li>
+<li><a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/test/EmbeddedHttpServer.scala"><code>com.twitter.finatra.http.test.EmbeddedHttpServer</code></a></li>
+</ul>
+
+
+<p>To create an embedded version of your HTTP server in a test, you would do the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">MyFeatureTest</span> <span class="k">extends</span> <span class="nc">FeatureTest</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleServer</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="s">&quot;test feature 1&quot;</span> <span class="n">should</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="s">&quot;respond accordingly&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">server</span><span class="o">.</span><span class="n">httpGet</span><span class="o">(</span>
+</span><span class='line'>        <span class="n">path</span> <span class="k">=</span> <span class="s">&quot;/foo&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">andExpect</span> <span class="k">=</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
+
+
+<p>For a more thorough example of an HTTP server feature test see: <a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/integration/doeverything/test/DoEverythingServerFeatureTest.scala"><code>DoEverythingServerFeatureTest</code></a>.</p>
+
+<h2><a class="anchor" name="override-modules">Override Modules</a></h2>
 
 <hr />
 
 <p>For basic information on Modules in Finatra, see <a href="/finatra/user-guide/getting-started#modules">Modules</a>.</p>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+<p>Defining a module is generally used to tell Guice <em>how</em> to instantiate an object to be provided to the object graph. When testing, however, we may want to provide an alternative instance of a type to the object graph. For instance, instead of making network calls to an external service through a real client we want to instead use a mock version of the client. Or load an in-memory implementation to which we can keep a reference in order to make assertions on it&rsquo;s internal state. In these cases we can compose a server with a collection of override modules that selectively replace bound instances.</p>
 
-<p>Donec hendrerit lorem at hendrerit posuere. Suspendisse metus lacus, molestie ac lobortis vitae, lacinia eu eros. Morbi sodales dui id erat luctus placerat. Quisque condimentum lacinia dignissim. Donec congue lacus eu viverra imperdiet. Pellentesque id semper elit. Integer vulputate ipsum a ligula fringilla, vel blandit nisl lacinia. Sed a ultricies magna. Sed massa mauris, tincidunt non iaculis et, pulvinar at urna. Vivamus placerat, mauris luctus lobortis malesuada, urna neque semper sem, a accumsan risus leo at tellus. Nulla et lobortis lectus, non vulputate nibh.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">override</span> <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">twitterServer</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ExampleServer</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">override</span> <span class="k">def</span> <span class="n">overrideModules</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="nc">OverrideSomeBehaviorModule</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">},</span>
+</span><span class='line'>  <span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<h2><a name="test-helpers" href="#test-helpers">Test Helper Classes</a></h2>
+
+<div></div>
+
+
+<p>Note, the modules use specifically for testing should generally be placed alongside your test code (as opposed to in your production code) to prevent any mistaken production usage of a test module. Also, it not always necessary to create a test module (see: <a href="#at-bind"><code>@Bind</code></a> section) for use as an override module. However, we encourage creating a test module when the functionality provided by the module is re-usable across your codebase.</p>
+
+<h2><a class="anchor" name="at-bind">Using <code>@Bind</code></a></h2>
+
+<hr />
+
+<p>In the case where we&rsquo;d like to replace a bound instance with another instance local to our test (e.g., a mock), we do not need to create a specific test module to compose into our server. Instead we can use the <a href="https://github.com/twitter/finatra/blob/master/inject/inject-core/src/test/java/com/google/inject/testing/fieldbinder/Bind.java"><code>@Bind</code></a> annotation in our test that extends <a href="#feature-tests"><code>FeatureTest</code></a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">ExampleFeatureTest</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">FeatureTest</span>
+</span><span class='line'>  <span class="k">with</span> <span class="nc">Mockito</span>
+</span><span class='line'>  <span class="k">with</span> <span class="nc">HttpTest</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleServer</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Bind</span> <span class="k">val</span> <span class="n">downstreamServiceClient</span> <span class="k">=</span> <span class="n">smartMock</span><span class="o">[</span><span class="kt">DownstreamServiceClient</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Bind</span> <span class="k">val</span> <span class="n">idService</span> <span class="k">=</span> <span class="n">smartMock</span><span class="o">[</span><span class="kt">IdService</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="s">&quot;test&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>    <span class="cm">/* Mock GET Request performed by DownstreamServiceClient */</span>
+</span><span class='line'>    <span class="n">downstreamServiceClient</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;/tweets/123.json&quot;</span><span class="o">)(</span><span class="n">manifest</span><span class="o">[</span><span class="kt">FooResponse</span><span class="o">])</span> <span class="n">returns</span> <span class="nc">Future</span><span class="o">(</span><span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
+
+
+<p>For a complete example, see the <a href="https://github.com/twitter/finatra/blob/master/examples/twitter-clone/src/test/scala/twitter/github/io/finatra/quickstart/TwitterCloneFeatureTest.scala"><code>TwitterCloneFeatureTest</code></a>.</p>
+
+<h2><a class="anchor" name="test-helpers">Test Helper Classes</a></h2>
+
+<hr />
 
 <p><img src="/finatra/images/FinatraTesting.png" alt="Finatra Test classes" /></p>
 
-<p>The Finatra testing framework uses the <a href="http://www.scalatest.org/">ScalaTest</a> testing framework and to facilitate the types of testing outlined above we have several testing traits to aid in creating simple and powerful tests.</p>
+<h3><a class="anchor" name="feature-tests">Feature Tests</a></h3>
 
-<h3><a href="http://blog.mattwynne.net/2010/10/22/features-user-stories/">Feature Tests</a></h3>
+<p>If you are familiar with <a href="http://docs.behat.org/en/v2.5/guides/1.gherkin.html">Gherkin</a> or <a href="https://github.com/cucumber/cucumber/wiki/Feature-Introduction">Cucumber</a> or other similar testing languages and frameworks, then feature testing will feel somewhat familiar. In Finatra, a feature test always consists of an app or a server under test. See the traits: <a href="https://github.com/twitter/finatra/blob/master/inject/inject-app/src/test/scala/com/twitter/inject/app/FeatureTest.scala">app/FeatureTest</a> and <a href="https://github.com/twitter/finatra/blob/master/inject/inject-server/src/test/scala/com/twitter/inject/server/FeatureTest.scala">server/FeatureTest</a>.</p>
 
-<p>see: <a href="https://github.com/twitter/finatra/blob/master/inject/inject-app/src/test/scala/com/twitter/inject/app/FeatureTest.scala">app/FeatureTest</a> and <a href="https://github.com/twitter/finatra/blob/master/inject/inject-server/src/test/scala/com/twitter/inject/server/FeatureTest.scala">server/FeatureTest</a></p>
+<p>We highly recommend writing feature tests for your services as they provide a very good signal of whether you have correctly implemented the features of your service. If you haven&rsquo;t implemented the feature correctly, it almost doesn&rsquo;t matter that you have lots of unit tests.</p>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+<p>For example, to write a feature test for an HTTP server, extend the <code>com.twitter.inject.server.FeatureTest</code> trait. Then override the <code>server</code> with an instance of your <a href="#embedded-server"><code>EmbeddedHttpServer</code></a>.</p>
 
-<h3>Integration Tests</h3>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">com.twitter.inject.server.FeatureTest</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ExampleServerFeatureTest</span> <span class="k">extends</span> <span class="nc">FeatureTest</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleServer</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="s">&quot;MyTest&quot;</span> <span class="n">should</span>  <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="s">&quot;perform feature&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">server</span><span class="o">.</span><span class="n">httpGet</span><span class="o">(</span>
+</span><span class='line'>        <span class="n">path</span> <span class="k">=</span> <span class="s">&quot;/&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">andExpect</span> <span class="k">=</span> <span class="nc">Status</span><span class="o">.</span><span class="nc">Ok</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>see: TestInjector</p>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+<div></div>
 
-<h3>Http Tests</h3>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec viverra purus, in tristique sapien. Duis eu molestie dolor. Nunc id lectus ac dolor posuere laoreet a at tortor. Ut elementum mi quam, varius consectetur eros suscipit in. Suspendisse ultricies dapibus ex feugiat consectetur. Aliquam massa sapien, egestas eleifend dui ac, scelerisque rhoncus urna. Quisque et magna orci. Etiam nisi augue, sollicitudin sed maximus a, hendrerit non enim. Sed a elementum sem. Fusce suscipit dignissim tincidunt.</p>
+<p>Note that the <code>server</code> is specified as a <code>def</code> in <code>com.twitter.inject.server.FeatureTest</code>, if you only want to start <em>one</em> instance of your server per test file make sure to override this <code>def</code> with a <code>val</code>.</p>
 
-<h3><code>com.twitter.inject.Mockito</code></h3>
+<p>There are plenty of example feature tests in Finatra, for an advanced example, see: <a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/integration/doeverything/test/DoEverythingServerFeatureTest.scala"><code>DoEverythingServerFeatureTest</code></a>.</p>
 
-<p>Provides <a href="https://etorreborre.github.io/specs2/">Specs2</a> Mockito syntax sugar for <a href="http://www.scalatest.org/">ScalaTest</a>.</p>
+<h3><a class="anchor" name="integration-tests">Integration Tests</a></h3>
 
-<p>This is a drop-in replacement for org.specs2.mock.Mockito. We encourage you to not use <code>org.specs2.mock.Mockito</code> directly. Otherwise, match failures won&rsquo;t be  propagated up as ScalaTest test failures.</p>
+<p>Whereas feature tests start the server or app under test thus loading the entire object graph, integration tests generally only test across a few interfaces in the system. In Finatra, we provide the <a href="https://github.com/twitter/finatra/blob/master/inject/inject-app/src/test/scala/com/twitter/inject/app/TestInjector.scala"><code>com.twitter.inject.app.TestInjector</code></a> which allows you to pass it a set of modules and flags to construct a minimal object graph.</p>
 
-<h2>Startup Tests</h2>
+<p>To write an integration test, extend the <code>com.twitter.inject.IntegrationTest</code> trait. Then override the <code>injector</code> val with your constructed instance of <code>com.twitter.inject.app.TestInjector</code>. You&rsquo;ll then be able to access instances of necessary classes to execute tests.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">com.twitter.inject.IntegrationTest</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ExampleIntegrationTest</span> <span class="k">extends</span> <span class="nc">IntegrationTest</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">injector</span> <span class="k">=</span>
+</span><span class='line'>    <span class="nc">TestInjector</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">clientFlags</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;foo.flag&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;meaningfulValue&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">modules</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="nc">ExampleModule</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="s">&quot;MyTest&quot;</span> <span class="n">should</span>  <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="s">&quot;perform feature&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">exampleThingy</span> <span class="k">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">instance</span><span class="o">[</span><span class="kt">ExampleThingy</span><span class="o">]</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
+
+
+<h3><a class="anchor" name="http-tests">Http Tests</a></h3>
+
+<p>If you are writing a test that has an HTTP server under test, then you can optionally extend the <a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/test/HttpTest.scala"><code>com.twitter.finatra.http.test.HttpTest</code></a> trait. The trait provides some common HTTP utilities for testing.</p>
+
+<h2><a class="anchor" name="startup-tests">Startup Tests</a></h2>
+
+<hr />
 
 <p>We recommend creating a simple test to check that your service can start up and report itself as healthy. This checks the correctness of the Guice dependency graph, catching errors that can otherwise cause the service to fail to start.</p>
 
@@ -187,7 +391,7 @@
 </span><span class='line'><span class="k">import</span> <span class="nn">com.twitter.inject.server.FeatureTest</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">class</span> <span class="nc">MyServiceStartupTests</span> <span class="k">extends</span> <span class="nc">FeatureTest</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">server</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EmbeddedHttpServer</span><span class="o">(</span>
 </span><span class='line'>    <span class="n">stage</span> <span class="k">=</span> <span class="nc">Stage</span><span class="o">.</span><span class="nc">PRODUCTION</span><span class="o">,</span>
 </span><span class='line'>    <span class="n">twitterServer</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SampleApiServer</span><span class="o">,</span>
 </span><span class='line'>    <span class="n">clientFlags</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
@@ -201,6 +405,9 @@
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
 
 
 <p><nav>

@@ -42,6 +42,8 @@
         font-weight: 800;
         font-size: 84px !important;
       }
+
+      .anchor { padding-top: 60px; }
     </style>
     <link rel="shortcut icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
     <link rel="icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
@@ -85,27 +87,83 @@
   <h3>Topics:</h3>
 
 <ul>
-<li><a href="/finatra/user-guide/getting-started">Getting Started</a></li>
+<li><a href="/finatra/user-guide/getting-started">Getting Started</a>
+
+<ul>
+<li><a href="/finatra/user-guide/getting-started#modules">Modules</a></li>
+<li><a href="/finatra/user-guide/getting-started#flags">Flags</a></li>
+<li><a href="/finatra/user-guide/getting-started#futures">Futures</a></li>
+</ul>
+</li>
 <li><a href="/finatra/user-guide/build-new-http-server">Building a new HTTP Server</a>
 
 <ul>
 <li><a href="/finatra/user-guide/build-new-http-server#server-definition">Create a Server Definition</a></li>
-<li><a href="/finatra/user-guide/build-new-http-server#add-controller">Add a Controller</a></li>
-<li><a href="/finatra/user-guide/build-new-http-server#add-filters">Add Filters</a></li>
-<li><a href="/finatra/user-guide/build-new-http-server#exception-mapper">Add an ExceptionMapper</a></li>
-<li><a href="/finatra/user-guide/build-new-http-server#server-warmup">Implement a Server &ldquo;Warmup&rdquo; Handler</a></li>
-<li><a href="/finatra/user-guide/build-new-http-server#more-information">More information</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server#override-defaults">Override Default Behavior</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/controller.html">Add a Controller</a>
+
+<ul>
+<li><a href="/finatra/user-guide/build-new-http-server/controller.html#controllers-and-routing">Routing</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/controller.html#requests">Requests</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/controller.html#responses">Responses</a></li>
 </ul>
 </li>
-<li><a href="/finatra/user-guide/json">Working with JSON</a></li>
-<li><a href="/finatra/user-guide/working-with-files">Working with Files</a></li>
-<li><a href="/finatra/user-guide/logging">Logging</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/filter.html">Add Filters</a>
+
+<ul>
+<li><a href="/finatra/user-guide/build-new-http-server/filter.html#request-scope">Request Scope</a>
+
+<ul>
+<li><a href="/finatra/user-guide/build-new-http-server/filter.html#request-ctx">Using <code>com.twitter.finagle.httpx.Request#ctx</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="/finatra/user-guide/build-new-http-server/exceptions.html">Add an ExceptionMapper</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/warmup.html">Implement a Server &ldquo;Warmup&rdquo; Handler</a></li>
+<li><a href="/finatra/user-guide/build-new-http-server/warmup.html#more-information">More information</a></li>
+</ul>
+</li>
+<li><a href="/finatra/user-guide/json">Working with JSON</a>
+
+<ul>
+<li><a href="/finatra/user-guide/json#configuration">Configuration</a></li>
+<li><a href="/finatra/user-guide/json#jackson-customization">Customization</a></li>
+<li><a href="/finatra/user-guide/json#routing-json">Integration with Routing</a></li>
+<li><a href="/finatra/user-guide/json#validaton-framework">Validation Framework</a></li>
+</ul>
+</li>
+<li><a href="/finatra/user-guide/files">Working with Files</a>
+
+<ul>
+<li><a href="/finatra/user-guide/files#file-server">File Server</a></li>
+<li><a href="/finatra/user-guide/files#mustache">Mustache Templating</a></li>
+</ul>
+</li>
+<li><a href="/finatra/user-guide/logging">Logging</a>
+
+<ul>
+<li><a href="/finatra/user-guide/logging#basics">Basics</a></li>
+<li><a href="/finatra/user-guide/logging#logback">Logback</a></li>
+<li><a href="/finatra/user-guide/logging#mdc">Mapped Diagnostic Context Filter</a></li>
+</ul>
+</li>
 <li><a href="/finatra/user-guide/testing">Testing</a>
 
 <ul>
 <li><a href="/finatra/user-guide/testing#testing-types">Types of Tests</a></li>
+<li><a href="/finatra/user-guide/testing#embedded-server">Embedded Servers/Apps</a></li>
 <li><a href="/finatra/user-guide/testing#override-modules">Override Modules</a></li>
-<li><a href="/finatra/user-guide/testing#test-helpers">Test Helpers</a></li>
+<li><a href="/finatra/user-guide/testing#at-bind">Using <code>@Bind</code></a></li>
+<li><a href="/finatra/user-guide/testing#test-helpers">Test Helper Classes</a>
+
+<ul>
+<li><a href="/finatra/user-guide/testing#feature-tests">Feature Tests</a></li>
+<li><a href="/finatra/user-guide/testing#integration-tests">Integration Tests</a></li>
+<li><a href="/finatra/user-guide/testing#http-tests">Http Tests</a></li>
+</ul>
+</li>
+<li><a href="/finatra/user-guide/testing#startup-tests">Startup Tests</a></li>
 </ul>
 </li>
 </ul>

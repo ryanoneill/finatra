@@ -40,6 +40,15 @@
     <loc>http://finatra.info/finatra/v1/docs/configuration.html</loc>
   </url>
   <url>
+    <loc>http://finatra.info/finatra/user-guide/build-new-http-server/controller.html</loc>
+  </url>
+  <url>
+    <loc>http://finatra.info/finatra/user-guide/build-new-http-server/exceptions.html</loc>
+  </url>
+  <url>
+    <loc>http://finatra.info/finatra/user-guide/build-new-http-server/filter.html</loc>
+  </url>
+  <url>
     <loc>http://finatra.info/finatra/blog/archives/</loc>
   </url>
   <url>
@@ -55,22 +64,22 @@
     <loc>http://finatra.info/finatra/v1/</loc>
   </url>
   <url>
-    <loc>http://finatra.info/finatra/user-guide/testing/</loc>
+    <loc>http://finatra.info/finatra/user-guide/logging/</loc>
   </url>
   <url>
-    <loc>http://finatra.info/finatra/user-guide/logging/</loc>
+    <loc>http://finatra.info/finatra/user-guide/getting-started/</loc>
+  </url>
+  <url>
+    <loc>http://finatra.info/finatra/user-guide/files/</loc>
+  </url>
+  <url>
+    <loc>http://finatra.info/finatra/user-guide/testing/</loc>
   </url>
   <url>
     <loc>http://finatra.info/finatra/user-guide/json/</loc>
   </url>
   <url>
     <loc>http://finatra.info/finatra/user-guide/</loc>
-  </url>
-  <url>
-    <loc>http://finatra.info/finatra/user-guide/getting-started/</loc>
-  </url>
-  <url>
-    <loc>http://finatra.info/finatra/user-guide/working-with-files/</loc>
   </url>
   <url>
     <loc>http://finatra.info/finatra/user-guide/build-new-http-server/</loc>
@@ -80,6 +89,9 @@
   </url>
   <url>
     <loc>http://finatra.info/finatra/v1/docs/tutorial.html</loc>
+  </url>
+  <url>
+    <loc>http://finatra.info/finatra/user-guide/build-new-http-server/warmup.html</loc>
   </url>
   <url>
     <loc>http://finatra.info/finatra/blog/categories/blog/</loc>

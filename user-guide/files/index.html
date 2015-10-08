@@ -42,6 +42,8 @@
         font-weight: 800;
         font-size: 84px !important;
       }
+
+      .anchor { padding-top: 60px; }
     </style>
     <link rel="shortcut icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
     <link rel="icon" href="/finatra/favicon.ico?v=2" type="image/x-icon">
@@ -82,7 +84,7 @@
 </ol>
 
 
-<h2><a name="file-server" href="#file-server">File Server</a></h2>
+<h2><a class="anchor" name="file-server">File Server</a></h2>
 
 <hr />
 
@@ -128,7 +130,10 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2><a name="mustache" href="#mustache">Mustache Templating</a></h2>
+<div></div>
+
+
+<h2><a class="anchor" name="mustache">Mustache Templating</a></h2>
 
 <hr />
 
@@ -143,6 +148,9 @@
 </span><span class='line'>  <span class="o">...</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
 
 
 <p>By default mustache templates are loaded from the classpath root. To configure a classpath &ldquo;namespace&rdquo; for loading mustache templates, set the <code>-mustache.templates.dir</code> flag.</p>
@@ -246,6 +254,9 @@
 </span><span class='line'>    <span class="n">renderedHtml</span> <span class="k">=</span> <span class="n">xml</span><span class="o">.</span><span class="nc">Utility</span><span class="o">.</span><span class="n">escape</span><span class="o">(</span><span class="n">mustacheService</span><span class="o">.</span><span class="n">createString</span><span class="o">(</span><span class="s">&quot;testHtml.mustache&quot;</span><span class="o">,</span> <span class="n">testUser</span><span class="o">)))</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
 
 
 <p>See the <a href="https://github.com/twitter/finatra/blob/master/http/src/test/scala/com/twitter/finatra/http/integration/doeverything/test/DoEverythingServerFeatureTest.scala#L1282">test class</a> for more examples.</p>
