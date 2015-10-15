@@ -89,9 +89,9 @@
 
 <hr />
 
-<p>It is recommended that you use exceptions for flow control in your controller and services and rely on the <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/exceptions/ExceptionMapper.scala"><code>com.twitter.finatra.http.exceptions.ExceptionMapper</code></a> to convert exceptions into proper HTTP responses. Finatra provides a default <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/internal/exceptions/FinatraDefaultExceptionMapper.scala">FinatraDefaultExceptionMapper</a> which provides high-level mapping for exceptions. However, you are free to register additional mappers (or to override the default mapper altogether).</p>
+<p>It is recommended that you use exceptions for flow control in your controller and services and rely on the <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/exceptions/ExceptionMapper.scala"><code>com.twitter.finatra.http.exceptions.ExceptionMapper</code></a> to convert exceptions into proper HTTP responses. Finatra provides a default <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/internal/exceptions/FinatraDefaultExceptionMapper.scala">FinatraDefaultExceptionMapper</a> which provides high-level mapping for exceptions. However, you are free to register additional mappers or to <a href="#override-defaults">override the default mapper</a> altogether.</p>
 
-<p>For instance, if you wanted to map <code>java.net.MalformedURLException</code> to a <code>400 - BadRequest</code> response you could create the following ExceptionMapper:</p>
+<p>For instance, if you wanted to map a <code>java.net.MalformedURLException</code> to a <code>400 - BadRequest</code> response you could create the following ExceptionMapper:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -115,7 +115,7 @@
 <div></div>
 
 
-<p>Then register this exception mapper in your server:</p>
+<p>Then register this exception mapper in your server. <strong>Note</strong>: using ExceptionMappers also require you to have the <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/filters/ExceptionMappingFilter.scala"><code>ExceptionMappingFilter</code></a> defined in your filter chain.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -139,11 +139,12 @@
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
+<span class='line-number'>23</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">DoEverythingModule</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">ExampleController</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">ExampleFilter</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">MalformedURLExceptionMapper</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">com.twitter.finatra.http.filters.AccessLoggingFilter</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.twitter.finatra.http.filters.</span><span class="o">{</span><span class="nc">AccessLoggingFilter</span><span class="o">,</span> <span class="nc">ExceptionMappingFilter</span><span class="o">}</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">com.twitter.finatra.http.routing.HttpRouter</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">com.twitter.finatra.http.</span><span class="o">{</span><span class="nc">Controller</span><span class="o">,</span> <span class="nc">HttpServer</span><span class="o">}</span>
 </span><span class='line'>
@@ -157,6 +158,7 @@
 </span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">configureHttp</span><span class="o">(</span><span class="n">router</span><span class="k">:</span> <span class="kt">HttpRouter</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>    <span class="n">router</span><span class="o">.</span>
 </span><span class='line'>      <span class="n">filter</span><span class="o">[</span><span class="kt">AccessLoggingFilter</span><span class="o">].</span>
+</span><span class='line'>      <span class="n">filter</span><span class="o">[</span><span class="kt">ExceptionMappingFilter</span><span class="o">].</span>
 </span><span class='line'>      <span class="n">add</span><span class="o">[</span><span class="kt">ExampleFilter</span>, <span class="kt">ExampleController</span><span class="o">].</span>
 </span><span class='line'>      <span class="n">exceptionMapper</span><span class="o">[</span><span class="kt">MalformedURLExceptionMapper</span><span class="o">]</span>
 </span><span class='line'>  <span class="o">}</span>
@@ -168,6 +170,50 @@
 
 
 <p>Again, you can see we register the exception mapper <em>by type</em> allowing the framework to instantiate an instance.</p>
+
+<h2><a class="anchor" name="override-defaults">Override Default Behavior</a></h2>
+
+<hr />
+
+<p>If you want to override the <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/internal/exceptions/FinatraDefaultExceptionMapper.scala"><code>FinatraDefaultExceptionMapper</code></a> you can override the <code>exceptionMapperModule</code> in your <a href="https://github.com/twitter/finatra/blob/master/http/src/main/scala/com/twitter/finatra/http/HttpServer.scala#L67"><code>HttpServer</code></a> to provide a custom implementation, e.g.,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">ExampleServer</span> <span class="k">extends</span> <span class="nc">HttpServer</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="n">modules</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span>
+</span><span class='line'>    <span class="nc">DoEverythingModule</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">configureHttp</span><span class="o">(</span><span class="n">router</span><span class="k">:</span> <span class="kt">HttpRouter</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">router</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">filter</span><span class="o">[</span><span class="kt">AccessLoggingFilter</span><span class="o">].</span>
+</span><span class='line'>      <span class="n">filter</span><span class="o">[</span><span class="kt">ExceptionMappingFilter</span><span class="o">].</span>
+</span><span class='line'>      <span class="n">add</span><span class="o">[</span><span class="kt">ExampleFilter</span>, <span class="kt">ExampleController</span><span class="o">].</span>
+</span><span class='line'>      <span class="n">exceptionMapper</span><span class="o">[</span><span class="kt">MalformedURLExceptionMapper</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">exceptionMapperModule</span> <span class="k">=</span> <span class="nc">MyExceptionMapperModule</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<div></div>
+
 
 <p>Next section: <a href="/finatra/user-guide/build-new-http-server/warmup.html">Implement a Server &ldquo;Warmup&rdquo; Handler</a>.</p>
 
