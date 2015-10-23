@@ -11,18 +11,18 @@ import scala.reflect.ClassTag
 
 trait ThriftClient { self: EmbeddedApp =>
 
-//  def twitterServer: Ports
+  def twitterServer: Ports
 
   override protected def combineArgs(): Array[String] = {
     ("-thrift.port=" + PortUtils.ephemeralLoopback) +: self.combineArgs
   }
 
-  def thriftExternalPort: Int = ???/*{
+  def thriftExternalPort: Int = {
     self.start()
     twitterServer.thriftPort.get
-  }*/
+  }
 
-  def thriftClient[T: ClassTag](clientId: String = null): T = ???/*{
+  def thriftClient[T: ClassTag](clientId: String = null): T = {
     val baseThriftClient =
       ThriftMux.Client().
         configured(Stats(NullStatsReceiver))
@@ -34,5 +34,5 @@ trait ThriftClient { self: EmbeddedApp =>
     }
 
     client.newIface[T](loopbackAddressForPort(thriftExternalPort))
-  }*/
+  }
 }

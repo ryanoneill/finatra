@@ -1,8 +1,13 @@
 package com.twitter.finatra.thrift
 
 import com.google.inject.Stage
+import com.twitter.finagle.ThriftMux
+import com.twitter.finagle.param.Stats
+import com.twitter.finagle.stats.NullStatsReceiver
+import com.twitter.finagle.thrift.ClientId
 import com.twitter.inject.server.PortUtils._
 import com.twitter.inject.server.{PortUtils, EmbeddedTwitterServer, Ports}
+import scala.reflect.ClassTag
 
 /**
  * EmbeddedThriftServer allows a twitter-server serving thrift endpoints to be started
@@ -42,8 +47,7 @@ class EmbeddedThriftServer(
     useSocksProxy,
     skipAppMain,
     verbose = verbose,
-    maxStartupTimeSeconds = maxStartupTimeSeconds)
-  with ThriftClient {
+    maxStartupTimeSeconds = maxStartupTimeSeconds) {
 
   protected def externalHostAndPort = {
     start()
@@ -57,5 +61,28 @@ class EmbeddedThriftServer(
 
   def thriftHostAndPort: String = {
     PortUtils.loopbackAddressForPort(thriftPort)
+  }
+
+  override protected def combineArgs(): Array[String] = {
+    ("-thrift.port=" + PortUtils.ephemeralLoopback) +: combineArgs
+  }
+
+  def thriftExternalPort: Int = {
+    start()
+    twitterServer.thriftPort.get
+  }
+
+  def thriftClient[T: ClassTag](clientId: String = null): T = {
+    val baseThriftClient =
+      ThriftMux.Client().
+        configured(Stats(NullStatsReceiver))
+
+    val client = {
+      if (clientId != null) {
+        baseThriftClient.withClientId(ClientId(clientId))
+      } else baseThriftClient
+    }
+
+    client.newIface[T](loopbackAddressForPort(thriftExternalPort))
   }
 }
