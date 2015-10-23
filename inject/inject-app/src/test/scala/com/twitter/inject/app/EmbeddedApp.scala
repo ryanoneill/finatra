@@ -109,7 +109,7 @@ class EmbeddedApp(
   def close() {
     if (!closed) {
       infoBanner("Closing EmbeddedApp for class " + appName)
-      app.close()
+      Await.result(app.close())
       mainRunnerFuturePool.executor.shutdown()
       closed = true
     }
@@ -205,6 +205,6 @@ class EmbeddedApp(
 
       Thread.sleep(1000)
     }
-    throw new scala.Exception(s"App: $appName failed to startup within 60 seconds.")
+    throw new Exception(s"App: $appName failed to startup within $maxStartupTimeSeconds seconds.")
   }
 }

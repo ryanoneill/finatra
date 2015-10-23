@@ -394,7 +394,8 @@ lazy val thrift = project.
   dependsOn(
     injectServer,
     injectServer % "test->test",
-    slf4j % "test->test"
+    slf4j % "test->test",
+    thrift % "test->test"
   )
 
 // START EXAMPLES

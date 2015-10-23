@@ -108,6 +108,11 @@ class EmbeddedHttpServer(
     twitterServer.httpsExternalPort.getOrElse(throw new Exception("External HTTPs port not bound"))
   }
 
+  lazy val httpExternalSocketAddress = {
+    start()
+    twitterServer.httpExternalSocketAddress.getOrElse(throw new Exception("External HTTP Socket Address not bound"))
+  }
+
   lazy val externalHttpHostAndPort = PortUtils.loopbackAddressForPort(httpExternalPort)
   lazy val externalHttpsHostAndPort = PortUtils.loopbackAddressForPort(httpsExternalPort)
 
@@ -464,7 +469,7 @@ class EmbeddedHttpServer(
 
   private def chooseHttpClient(path: String, forceAdmin: Boolean, secure: Boolean) = {
     if (path.startsWith("/admin") || forceAdmin)
-      (httpAdminClient, twitterServer.httpAdminPort)
+      (httpAdminClient, httpAdminPort)
     else if (secure)
       (httpsClient, twitterServer.httpsExternalPort.get)
     else

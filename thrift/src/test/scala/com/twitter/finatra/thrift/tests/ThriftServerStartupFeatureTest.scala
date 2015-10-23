@@ -18,13 +18,10 @@ class ThriftServerStartupFeatureTest extends Test {
       }
     })
 
-    try {
-      intercept[AssertionError] {
-        server.start()
-      }
-    }
-    finally {
-      server.close()
+    // Note: we don't call server.close() as the server never
+    // starts, thus calling server.close will result in an NPE
+    intercept[AssertionError] {
+      server.start()
     }
   }
 

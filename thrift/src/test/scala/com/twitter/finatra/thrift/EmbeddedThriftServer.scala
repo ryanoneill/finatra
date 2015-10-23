@@ -2,7 +2,7 @@ package com.twitter.finatra.thrift
 
 import com.google.inject.Stage
 import com.twitter.inject.server.PortUtils._
-import com.twitter.inject.server.{EmbeddedTwitterServer, Ports}
+import com.twitter.inject.server.{PortUtils, EmbeddedTwitterServer, Ports}
 
 /**
  * EmbeddedThriftServer allows a twitter-server serving thrift endpoints to be started
@@ -19,6 +19,8 @@ import com.twitter.inject.server.{EmbeddedTwitterServer, Ports}
  * @param useSocksProxy Use a tunneled socks proxy for external service discovery/calls (useful for manually run external integration tests that connect to external services)
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
  * @param thriftPortFlag Name of the flag that defines the external thrift port for the server.
+ * @param verbose Toggle to suppress framework test logging
+ * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
 class EmbeddedThriftServer(
   twitterServer: Ports,
@@ -46,5 +48,14 @@ class EmbeddedThriftServer(
   protected def externalHostAndPort = {
     start()
     Some(loopbackAddressForPort(thriftExternalPort))
+  }
+
+  def thriftPort: Int = {
+    start()
+    twitterServer.thriftPort.get
+  }
+
+  def thriftHostAndPort: String = {
+    PortUtils.loopbackAddressForPort(thriftPort)
   }
 }

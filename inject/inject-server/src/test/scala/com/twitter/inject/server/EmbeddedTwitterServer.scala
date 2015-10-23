@@ -13,6 +13,7 @@ import com.twitter.finagle.{ChannelClosedException, Service}
 import com.twitter.inject.app.{App, EmbeddedApp}
 import com.twitter.inject.modules.InMemoryStatsReceiverModule
 import com.twitter.inject.server.EmbeddedTwitterServer._
+import com.twitter.inject.server.PortUtils._
 import com.twitter.util._
 import java.net.{InetSocketAddress, URI}
 import java.util.concurrent.TimeUnit._
@@ -49,9 +50,13 @@ object EmbeddedTwitterServer {
  *              creates all Guice classes at startup)
  * @param useSocksProxy Use a tunneled socks proxy for external service discovery/calls (useful for manually run external integration tests that connect to external services)
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
+ * @param defaultRequestHeaders Headers to always send to the embedded server.
+ * @param streamResponse Toggle to not unwrap response content body to allow caller to stream response.
+ * @param verbose Toggle to suppress framework test logging
+ * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
 class EmbeddedTwitterServer(
-  val twitterServer: Ports,
+  val twitterServer: com.twitter.server.TwitterServer,
   clientFlags: Map[String, String] = Map(),
   extraArgs: Seq[String] = Seq(),
   waitForWarmup: Boolean = true,
@@ -86,23 +91,24 @@ class EmbeddedTwitterServer(
   }
 
   /* Lazy Fields */
+  lazy val httpAdminPort = getPort(twitterServer.adminHttpServer)
 
   lazy val httpAdminClient = {
     start()
     createHttpClient(
       "httpAdminClient",
-      twitterServer.httpAdminPort)
+      httpAdminPort)
   }
 
   lazy val statsReceiver = if (isGuiceApp) injector.instance[StatsReceiver] else new InMemoryStatsReceiver
   lazy val inMemoryStatsReceiver = statsReceiver.asInstanceOf[InMemoryStatsReceiver]
-  lazy val adminHostAndPort = PortUtils.loopbackAddressForPort(twitterServer.httpAdminPort)
+  lazy val adminHostAndPort = PortUtils.loopbackAddressForPort(httpAdminPort)
   lazy val isGuiceTwitterServer = twitterServer.isInstanceOf[App]
 
   /* Overrides */
 
   override protected def nonGuiceAppStarted(): Boolean = {
-    twitterServer.httpAdminPort != 0
+    httpAdminPort != 0 && healthResponse(shouldBeHealthy = true).isReturn
   }
 
   override protected def logAppStartup() {
@@ -130,14 +136,6 @@ class EmbeddedTwitterServer(
 
   /* Public */
 
-  def thriftPort: Int = {
-    start()
-    twitterServer.thriftPort.get
-  }
-
-  def thriftHostAndPort: String = {
-    PortUtils.loopbackAddressForPort(thriftPort)
-  }
 
   def clearStats() = {
     inMemoryStatsReceiver.counters.clear()
@@ -172,12 +170,7 @@ class EmbeddedTwitterServer(
   }
 
   def assertHealthy(healthy: Boolean = true) {
-    val expectedBody = if (healthy) "OK\n" else ""
-
-    httpGetAdmin(
-      "/health",
-      andExpect = Status.Ok,
-      withBody = expectedBody)
+    healthResponse(healthy)()
   }
 
   def assertAppStarted(started: Boolean = true) {
@@ -285,7 +278,27 @@ class EmbeddedTwitterServer(
     info(response.contentString + "\n")
   }
 
+  protected def createApiRequest(path: String, method: Method = Method.Get) = {
+    val pathToUse = if (path.startsWith("http"))
+      URI.create(path).getPath
+    else
+      path
+
+    Request(method, pathToUse)
+  }
+
   /* Private */
+
+  private def healthResponse(shouldBeHealthy: Boolean = true): Try[Response] = {
+    val expectedBody = if (shouldBeHealthy) "OK\n" else ""
+
+    Try {
+      httpGetAdmin(
+        "/health",
+        andExpect = Status.Ok,
+        withBody = expectedBody)
+    }
+  }
 
   private def receivedResponseStr(response: Response) = {
     "\n\nReceived Response:\n" + response.encodeString()
@@ -362,15 +375,6 @@ class EmbeddedTwitterServer(
         request.headerMap.set(key, value)
       }
     }
-  }
-
-  protected def createApiRequest(path: String, method: Method = Method.Get) = {
-    val pathToUse = if (path.startsWith("http"))
-      URI.create(path).getPath
-    else
-      path
-
-    Request(method, pathToUse)
   }
 
   private def addAcceptHeader(
