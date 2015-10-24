@@ -24,7 +24,7 @@ import scala.reflect.ClassTag
  * @param useSocksProxy Use a tunneled socks proxy for external service discovery/calls (useful for manually run external integration tests that connect to external services)
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
  * @param thriftPortFlag Name of the flag that defines the external thrift port for the server.
- * @param verbose Enable additional logging during test runs
+ * @param verbose Enable verbose logging during test runs
  * @param disableTestLogging Disable all logging emitted from the test infrastructure
  * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */

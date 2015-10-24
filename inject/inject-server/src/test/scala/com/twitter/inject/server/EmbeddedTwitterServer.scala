@@ -9,14 +9,16 @@ import com.twitter.finagle.service.Backoff._
 import com.twitter.finagle.service.RetryPolicy
 import com.twitter.finagle.service.RetryPolicy._
 import com.twitter.finagle.stats.{InMemoryStatsReceiver, NullStatsReceiver, StatsReceiver}
-import com.twitter.finagle.{ChannelClosedException, Service}
+import com.twitter.finagle.{ListeningServer, ChannelClosedException, Service}
 import com.twitter.inject.app.{App, EmbeddedApp}
 import com.twitter.inject.modules.InMemoryStatsReceiverModule
 import com.twitter.inject.server.EmbeddedTwitterServer._
 import com.twitter.inject.server.PortUtils._
+import com.twitter.server.AdminHttpServer
 import com.twitter.util._
 import java.net.{InetSocketAddress, URI}
 import java.util.concurrent.TimeUnit._
+import org.apache.commons.lang.reflect.FieldUtils
 import scala.collection.immutable.SortedMap
 
 object EmbeddedTwitterServer {
@@ -52,7 +54,7 @@ object EmbeddedTwitterServer {
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
  * @param defaultRequestHeaders Headers to always send to the embedded server.
  * @param streamResponse Toggle to not unwrap response content body to allow caller to stream response.
- * @param verbose Enable additional logging during test runs
+ * @param verbose Enable verbose logging during test runs
  * @param disableTestLogging Disable all logging emitted from the test infrastructure
  * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
@@ -146,7 +148,15 @@ class EmbeddedTwitterServer(
       healthResponse(shouldBeHealthy = true).isReturn
   }
 
-  def httpAdminPort = getPort(twitterServer.adminBoundAddress)
+  def httpAdminPort = {
+    // TODO: The following is the desired implementation but it requires a CSL release after we add the adminBoundAddress method:
+    // getPort(twitterServer.adminBoundAddress)
+
+    // HACK: Here's the temporary workaround
+    val adminHttpServerField = FieldUtils.getField(twitterServer.getClass, "adminHttpServer", true)
+    val listeningServer = adminHttpServerField.get(twitterServer).asInstanceOf[ListeningServer]
+    getPort(listeningServer)
+  }
 
   def clearStats() = {
     inMemoryStatsReceiver.counters.clear()

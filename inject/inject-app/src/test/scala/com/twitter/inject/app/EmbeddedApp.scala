@@ -18,7 +18,7 @@ import org.scalatest.Matchers
  *              This makes it possible to only mock objects that are used in a given test, at the expense of not checking that the entire
  *              object graph is valid. As such, you should always have at lease one Stage.PRODUCTION test for your service (which eagerly
  *              creates all Guice classes at startup).
- * @param verbose Enable additional logging during test runs
+ * @param verbose Enable verbose logging during test runs
  * @param disableTestLogging Disable all logging emitted from the test infrastructure
  * @param maxStartupTimeSeconds Max seconds to wait for app startup
  */

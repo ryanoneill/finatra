@@ -24,11 +24,15 @@ javaVersion=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d
 # Workaround for JDK issue: https://bugs.openjdk.java.net/browse/JDK-8058847
 # only add the option on version JDK8
 ELIMINATE_AUTOBOX_JVM_ARG=""
-MAX_PERM_SIZE_JVM_ARG=""
 if [[ $javaVersion == *"8"* ]]; then
   ELIMINATE_AUTOBOX_JVM_ARG="-XX:-EliminateAutoBox"
+fi
+
+MAX_PERM_SIZE_JVM_ARG=""
+if [[ $javaVersion != *"8"* ]]; then
   MAX_PERM_SIZE_JVM_ARG="-XX:MaxPermSize=1024M"
 fi
+
 
 [ -f ~/.sbtconfig ] && . ~/.sbtconfig
 
