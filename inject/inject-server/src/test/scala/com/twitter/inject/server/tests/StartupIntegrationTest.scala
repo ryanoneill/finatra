@@ -14,14 +14,19 @@ class StartupIntegrationTest extends Test {
 
   "startup" should {
     "ensure health check succeeds when guice config is good" in {
-      val server = new EmbeddedTwitterServer(new SimpleGuiceHttpTwitterServer)
-      server.assertHealthy()
+      for (i <- 1 to 1) {
+        val server = new EmbeddedTwitterServer(new SimpleGuiceHttpTwitterServer)
+        server.assertHealthy()
 
-      server.httpGetAdmin(
-        "/admin/server_info",
-        andExpect = Status.Ok)
+        server.httpGetAdmin(
+          "/admin/server_info",
+          andExpect = Status.Ok)
 
-      server.close()
+        server.close()
+      }
+
+      /*System.gc()
+      Thread.sleep(200000)*/
     }
 
     "non HTTP twitter-server passes health check" in {
@@ -116,11 +121,11 @@ class StartupIntegrationTest extends Test {
 
     "appMain throws exception" in {
       val server = new EmbeddedApp(
-          new App {
-            override def appMain(): Unit = {
-              throw new RuntimeException("oops")
-            }
-          })
+        new App {
+          override def appMain(): Unit = {
+            throw new RuntimeException("oops")
+          }
+        })
 
       intercept[Exception] {
         server.start()

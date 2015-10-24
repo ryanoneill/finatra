@@ -28,21 +28,6 @@ lazy val compilerOptions = scalacOptions ++= Seq(
   }
 )
 
-val baseSettings = Seq(
-  libraryDependencies ++= Seq(
-    "ch.qos.logback" % "logback-classic" % versions.logback % "test",
-    "org.mockito" % "mockito-core" % "1.9.5" % "test",
-    "org.scalatest" %% "scalatest" % "2.2.3" % "test",
-    "org.specs2" %% "specs2" % "2.3.12" % "test"
-  ),
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("releases"),
-    "Twitter Maven" at "https://maven.twttr.com",
-    Resolver.sonatypeRepo("snapshots")
-  ),
-  compilerOptions
-)
-
 lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact := true,
@@ -110,18 +95,40 @@ lazy val versions = new {
   val util = "6.29.0"
 }
 
-lazy val injectBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
+val slf4jSimpleTestDependency = Seq(
+  libraryDependencies ++= Seq(
+    "org.slf4j" % "slf4j-simple" % versions.slf4j % "test"
+  )
+)
+
+val baseSettings = Seq(
+  libraryDependencies ++= Seq(
+    "org.mockito" % "mockito-core" % "1.9.5" % "test",
+    "org.scalatest" %% "scalatest" % "2.2.3" % "test",
+    "org.specs2" %% "specs2" % "2.3.12" % "test"
+  ),
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("releases"),
+    "Twitter Maven" at "https://maven.twttr.com",
+    Resolver.sonatypeRepo("snapshots")
+  ),
+  compilerOptions
+)
+
+lazy val injectBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ slf4jSimpleTestDependency ++ Seq(
   organization := "com.twitter.inject"
 )
 
-lazy val finatraBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
+lazy val finatraBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ slf4jSimpleTestDependency ++ Seq(
   organization := "com.twitter.finatra"
 )
 
-lazy val commonSettings = baseSettings ++ buildSettings ++ publishSettings ++ unidocSettings
+lazy val serverBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
+  organization := "io.finatra.example"
+)
 
 lazy val root = (project in file(".")).
-  settings(commonSettings: _*).
+  settings(unidocSettings).
   settings(
     organization := "com.twitter.finatra",
     moduleName := "finatra-root",
@@ -144,7 +151,7 @@ lazy val root = (project in file(".")).
 
     // START EXAMPLES
     helloWorld,
-    //helloWorldHeroku, 2.11 only
+    helloWorldHeroku,
     tinyUrl,
     streamingExample,
     twitterClone,
@@ -273,7 +280,7 @@ lazy val benchmarks = project.
       case other => MergeStrategy.defaultMergeStrategy(other)
     },
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-simple" % "1.7.7"
+      "org.slf4j" % "slf4j-simple" % versions.slf4j
     )
   ).
   dependsOn(
@@ -402,7 +409,7 @@ lazy val thrift = project.
 
 // 2.11 only due to rlazoti/finagle-metrics dependency
 lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "hello-world-heroku",
     moduleName := "hello-world-heroku",
@@ -426,7 +433,7 @@ lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
   )
 
 lazy val helloWorld = (project in file("examples/hello-world")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "finatra-hello-world",
     moduleName := "finatra-hello-world",
@@ -448,7 +455,7 @@ lazy val helloWorld = (project in file("examples/hello-world")).
   )
 
 lazy val streamingExample = (project in file("examples/streaming-example")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "streaming-example",
     moduleName := "streaming-example",
@@ -471,7 +478,7 @@ lazy val streamingExample = (project in file("examples/streaming-example")).
   )
 
 lazy val twitterClone = (project in file("examples/twitter-clone")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "finatra-twitter-clone",
     moduleName := "finatra-twitter-clone",
@@ -506,7 +513,7 @@ lazy val benchmarkServer = (project in file("examples/benchmark-server")).
       case other => MergeStrategy.defaultMergeStrategy(other)
     },
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-simple" % "1.7.7"
+      "org.slf4j" % "slf4j-simple" % versions.slf4j
     )
   ).
   dependsOn(
@@ -518,7 +525,7 @@ lazy val benchmarkServer = (project in file("examples/benchmark-server")).
   )
 
 lazy val tinyUrl = (project in file("examples/tiny-url")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "tiny-url",
     moduleName := "tiny-url",
@@ -542,7 +549,7 @@ lazy val tinyUrl = (project in file("examples/tiny-url")).
   )
 
 lazy val exampleInjectJavaServer = (project in file("inject/examples/java-server")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "java-server",
     moduleName := "java-server",
@@ -579,7 +586,7 @@ lazy val thriftExampleIdl = (project in file("examples/thrift-server/thrift-exam
   dependsOn(thrift)
 
 lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-example-server")).
-  settings(finatraBuildSettings: _*).
+  settings(serverBuildSettings: _*).
   settings(
     name := "thrift-example-server",
     moduleName := "thrift-example-server",

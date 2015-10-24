@@ -128,6 +128,7 @@ class EmbeddedTwitterServer(
 
   override def close() {
     if (!closed) {
+      twitterServer.log.clearHandlers()
       super.close()
       closed = true
     }
