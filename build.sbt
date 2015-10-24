@@ -11,6 +11,29 @@ lazy val buildSettings = Seq(
   crossScalaVersions := Seq("2.10.6", "2.11.7")
 )
 
+lazy val versions = new {
+  val commonsCodec = "1.9"
+  val commonsFileupload = "1.3.1"
+  val commonsIo = "2.4"
+  val finagle = "6.30.0"
+  val grizzled = "1.0.2"
+  val guava = "16.0.1"
+  val guice = "4.0"
+  val scalaGuice = "4.0.0"
+  val jackson = "2.4.4"
+  val jodaConvert = "1.2"
+  val jodaTime = "2.5"
+  val logback = "1.0.13"
+  val mustache = "0.8.18"
+  val nscalaTime = "1.6.0"
+  val servletApi = "2.5"
+  val scrooge = "4.2.0"
+  val snakeyaml = "1.12"
+  val slf4j = "1.7.7"
+  val twitterServer = "1.15.0"
+  val util = "6.29.0"
+}
+
 lazy val compilerOptions = scalacOptions ++= Seq(
   "-deprecation",
   "-encoding", "UTF-8",
@@ -72,35 +95,6 @@ lazy val publishSettings = Seq(
   }
 )
 
-lazy val versions = new {
-  val commonsCodec = "1.9"
-  val commonsFileupload = "1.3.1"
-  val commonsIo = "2.4"
-  val finagle = "6.30.0"
-  val grizzled = "1.0.2"
-  val guava = "16.0.1"
-  val guice = "4.0"
-  val scalaGuice = "4.0.0"
-  val jackson = "2.4.4"
-  val jodaConvert = "1.2"
-  val jodaTime = "2.5"
-  val logback = "1.0.13"
-  val mustache = "0.8.18"
-  val nscalaTime = "1.6.0"
-  val servletApi = "2.5"
-  val scrooge = "4.2.0"
-  val snakeyaml = "1.12"
-  val slf4j = "1.7.7"
-  val twitterServer = "1.15.0"
-  val util = "6.29.0"
-}
-
-val slf4jSimpleTestDependency = Seq(
-  libraryDependencies ++= Seq(
-    "org.slf4j" % "slf4j-simple" % versions.slf4j % "test"
-  )
-)
-
 val baseSettings = Seq(
   libraryDependencies ++= Seq(
     "org.mockito" % "mockito-core" % "1.9.5" % "test",
@@ -115,6 +109,12 @@ val baseSettings = Seq(
   compilerOptions
 )
 
+val slf4jSimpleTestDependency = Seq(
+  libraryDependencies ++= Seq(
+    "org.slf4j" % "slf4j-simple" % versions.slf4j % "test"
+  )
+)
+
 lazy val injectBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ slf4jSimpleTestDependency ++ Seq(
   organization := "com.twitter.inject"
 )
@@ -123,8 +123,20 @@ lazy val finatraBuildSettings = baseSettings ++ buildSettings ++ publishSettings
   organization := "com.twitter.finatra"
 )
 
-lazy val serverBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
-  organization := "io.finatra.example"
+lazy val commonServerBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
+  organization := "io.finatra.example",
+  publishLocal := {},
+  publish := {},
+  assemblyMergeStrategy in assembly := {
+    case "BUILD" => MergeStrategy.discard
+    case other => MergeStrategy.defaultMergeStrategy(other)
+  }
+)
+
+lazy val serverBuildSettings = commonServerBuildSettings ++ Seq(
+  libraryDependencies ++= Seq(
+    "ch.qos.logback" % "logback-classic" % versions.logback
+  )
 )
 
 lazy val root = (project in file(".")).
@@ -163,7 +175,7 @@ lazy val root = (project in file(".")).
   )
 
 lazy val injectCore = (project in file("inject/inject-core")).
-  settings(injectBuildSettings: _*).
+  settings(injectBuildSettings).
   settings(
     name := "inject-core",
     moduleName := "inject-core",
@@ -186,7 +198,7 @@ lazy val injectCore = (project in file("inject/inject-core")).
   )
 
 lazy val injectModules = (project in file("inject/inject-modules")).
-  settings(injectBuildSettings: _*).
+  settings(injectBuildSettings).
   settings(
     name := "inject-modules",
     moduleName := "inject-modules",
@@ -201,7 +213,7 @@ lazy val injectModules = (project in file("inject/inject-modules")).
   )
 
 lazy val injectApp = (project in file("inject/inject-app")).
-  settings(injectBuildSettings: _*).
+  settings(injectBuildSettings).
   settings(
     name := "inject-app",
     moduleName := "inject-app",
@@ -215,7 +227,7 @@ lazy val injectApp = (project in file("inject/inject-app")).
   )
 
 lazy val injectServer = (project in file("inject/inject-server")).
-  settings(injectBuildSettings: _*).
+  settings(injectBuildSettings).
   settings(
     name := "inject-server",
     moduleName := "inject-server",
@@ -232,7 +244,7 @@ lazy val injectServer = (project in file("inject/inject-server")).
   )
 
 lazy val injectRequestScope = (project in file("inject/inject-request-scope")).
-  settings(injectBuildSettings: _*).
+  settings(injectBuildSettings).
   settings(
     name := "inject-request-scope",
     moduleName := "inject-request-scope",
@@ -269,16 +281,11 @@ lazy val injectThriftClient = (project in file("inject/inject-thrift-client")).
 
 // Can run in the SBT console in this project with `> run -wi 20 -i 10 -f 1 .*`.
 lazy val benchmarks = project.
-  settings((finatraBuildSettings ++ jmhSettings): _*).
+  settings(commonServerBuildSettings).
+  settings(jmhSettings).
   settings(
     name := "finatra-benchmarks",
     moduleName := "finatra-benchmarks",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-simple" % versions.slf4j
     )
@@ -289,7 +296,7 @@ lazy val benchmarks = project.
   )
 
 lazy val utils = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-utils",
     moduleName := "finatra-utils",
@@ -312,7 +319,7 @@ lazy val utils = project.
   )
 
 lazy val jackson = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-jackson",
     moduleName := "finatra-jackson",
@@ -331,7 +338,7 @@ lazy val jackson = project.
   )
 
 lazy val http = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-http",
     moduleName := "finatra-http",
@@ -354,7 +361,7 @@ lazy val http = project.
   )
 
 lazy val httpclient = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-httpclient",
     moduleName := "finatra-httpclient",
@@ -369,7 +376,7 @@ lazy val httpclient = project.
   )
 
 lazy val slf4j = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-slf4j",
     moduleName := "finatra-slf4j",
@@ -387,7 +394,7 @@ lazy val slf4j = project.
   )
 
 lazy val thrift = project.
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "finatra-thrift",
     moduleName := "finatra-thrift",
@@ -409,19 +416,12 @@ lazy val thrift = project.
 
 // 2.11 only due to rlazoti/finagle-metrics dependency
 lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "hello-world-heroku",
     moduleName := "hello-world-heroku",
     crossScalaVersions := Seq(),
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback,
       "com.github.rlazoti" % "finagle-metrics_2.11" % "0.0.2" //2.11 only
     )
   ).
@@ -433,19 +433,10 @@ lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
   )
 
 lazy val helloWorld = (project in file("examples/hello-world")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "finatra-hello-world",
-    moduleName := "finatra-hello-world",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback
-    )
+    moduleName := "finatra-hello-world"
   ).
   dependsOn(
     http,
@@ -455,20 +446,10 @@ lazy val helloWorld = (project in file("examples/hello-world")).
   )
 
 lazy val streamingExample = (project in file("examples/streaming-example")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "streaming-example",
-    moduleName := "streaming-example",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback,
-      "com.twitter" % "joauth" % "6.0.2"
-    )
+    moduleName := "streaming-example"
   ).
   dependsOn(
     http,
@@ -478,20 +459,11 @@ lazy val streamingExample = (project in file("examples/streaming-example")).
   )
 
 lazy val twitterClone = (project in file("examples/twitter-clone")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "finatra-twitter-clone",
     moduleName := "finatra-twitter-clone",
-    publishLocal := {},
-    publish := {},
-    coverageExcludedPackages := "<empty>;.*finatra.*", //TODO: Temp exclude some examples
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback
-    )
+    coverageExcludedPackages := "<empty>;.*finatra.*" //TODO: Temp exclude some examples
   ).
   dependsOn(
     http,
@@ -502,19 +474,10 @@ lazy val twitterClone = (project in file("examples/twitter-clone")).
   )
 
 lazy val benchmarkServer = (project in file("examples/benchmark-server")).
-  settings(finatraBuildSettings: _*).
+  settings(commonServerBuildSettings).
   settings(
     name := "finatra-benchmark-server",
-    moduleName := "finatra-benchmark-server",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
-    libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-simple" % versions.slf4j
-    )
+    moduleName := "finatra-benchmark-server"
   ).
   dependsOn(
     http,
@@ -525,18 +488,11 @@ lazy val benchmarkServer = (project in file("examples/benchmark-server")).
   )
 
 lazy val tinyUrl = (project in file("examples/tiny-url")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "tiny-url",
     moduleName := "tiny-url",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback,
       "redis.clients" % "jedis" % "2.7.2"
     )
   ).
@@ -549,20 +505,12 @@ lazy val tinyUrl = (project in file("examples/tiny-url")).
   )
 
 lazy val exampleInjectJavaServer = (project in file("inject/examples/java-server")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "java-server",
     moduleName := "java-server",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback,
       "com.novocode" % "junit-interface" % "0.11" % Test
-
     )
   ).
   dependsOn(
@@ -574,7 +522,7 @@ lazy val exampleInjectJavaServer = (project in file("inject/examples/java-server
   )
 
 lazy val thriftExampleIdl = (project in file("examples/thrift-server/thrift-example-idl")).
-  settings(finatraBuildSettings: _*).
+  settings(finatraBuildSettings).
   settings(
     name := "thrift-example-idl",
     moduleName := "thrift-example-idl",
@@ -586,19 +534,10 @@ lazy val thriftExampleIdl = (project in file("examples/thrift-server/thrift-exam
   dependsOn(thrift)
 
 lazy val thriftExampleServer = (project in file("examples/thrift-server/thrift-example-server")).
-  settings(serverBuildSettings: _*).
+  settings(serverBuildSettings).
   settings(
     name := "thrift-example-server",
     moduleName := "thrift-example-server",
-    publishLocal := {},
-    publish := {},
-    assemblyMergeStrategy in assembly := {
-      case "BUILD" => MergeStrategy.discard
-      case other => MergeStrategy.defaultMergeStrategy(other)
-    },
-    libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % versions.logback
-    ),
     scroogeThriftIncludeFolders in Compile := Seq(
       file("thrift/src/main/thrift"),
       file("examples/thrift-server/thrift-example-idl/src/main/thrift"))
