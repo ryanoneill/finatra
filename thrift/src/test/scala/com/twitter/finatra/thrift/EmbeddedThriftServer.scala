@@ -24,7 +24,8 @@ import scala.reflect.ClassTag
  * @param useSocksProxy Use a tunneled socks proxy for external service discovery/calls (useful for manually run external integration tests that connect to external services)
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
  * @param thriftPortFlag Name of the flag that defines the external thrift port for the server.
- * @param verbose Toggle to suppress framework test logging
+ * @param verbose Enable additional logging during test runs
+ * @param disableTestLogging Disable all logging emitted from the test infrastructure
  * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
 class EmbeddedThriftServer(
@@ -36,7 +37,8 @@ class EmbeddedThriftServer(
   useSocksProxy: Boolean = false,
   skipAppMain: Boolean = false,
   thriftPortFlag: String = "thrift.port",
-  verbose: Boolean = true,
+  verbose: Boolean = false,
+  disableTestLogging: Boolean = false,
   maxStartupTimeSeconds: Int = 60)
   extends EmbeddedTwitterServer(
     twitterServer,
@@ -64,7 +66,7 @@ class EmbeddedThriftServer(
   }
 
   override protected def combineArgs(): Array[String] = {
-    ("-thrift.port=" + PortUtils.ephemeralLoopback) +: combineArgs
+    ("-thrift.port=" + PortUtils.ephemeralLoopback) +: super.combineArgs
   }
 
   def thriftExternalPort: Int = {

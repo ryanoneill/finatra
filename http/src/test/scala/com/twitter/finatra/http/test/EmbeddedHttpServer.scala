@@ -22,7 +22,8 @@ class EmbeddedHttpServer(
   mapperOverride: Option[FinatraObjectMapper] = None,
   httpPortFlag: String = "http.port",
   streamResponse: Boolean = false,
-  verbose: Boolean = true,
+  verbose: Boolean = false,
+  disableTestLogging: Boolean = false,
   maxStartupTimeSeconds: Int = 60)
   extends com.twitter.inject.server.EmbeddedTwitterServer(
     twitterServer = twitterServer,

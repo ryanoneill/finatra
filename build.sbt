@@ -256,7 +256,8 @@ lazy val injectThriftClient = (project in file("inject/inject-thrift-client")).
     injectCore,
     injectCore % "test->test",
     injectApp % "test->test",
-    http % "test->test"
+    http % "test->test",
+    thrift % "test->test"
   )
 
 // Can run in the SBT console in this project with `> run -wi 20 -i 10 -f 1 .*`.
@@ -394,8 +395,7 @@ lazy val thrift = project.
   dependsOn(
     injectServer,
     injectServer % "test->test",
-    slf4j % "test->test",
-    thrift % "test->test"
+    slf4j % "test->test"
   )
 
 // START EXAMPLES

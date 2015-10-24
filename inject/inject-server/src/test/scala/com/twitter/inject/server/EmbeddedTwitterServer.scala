@@ -52,7 +52,8 @@ object EmbeddedTwitterServer {
  * @param skipAppMain Skip the running of appMain when the app starts. You will need to manually call app.appMain() later in your test.
  * @param defaultRequestHeaders Headers to always send to the embedded server.
  * @param streamResponse Toggle to not unwrap response content body to allow caller to stream response.
- * @param verbose Toggle to suppress framework test logging
+ * @param verbose Enable additional logging during test runs
+ * @param disableTestLogging Disable all logging emitted from the test infrastructure
  * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
 class EmbeddedTwitterServer(
@@ -65,7 +66,8 @@ class EmbeddedTwitterServer(
   skipAppMain: Boolean = false,
   defaultRequestHeaders: Map[String, String] = Map(),
   streamResponse: Boolean = false,
-  verbose: Boolean = true,
+  verbose: Boolean = false,
+  disableTestLogging: Boolean = false,
   maxStartupTimeSeconds: Int = 60)
   extends EmbeddedApp(
     app = twitterServer,
@@ -91,7 +93,6 @@ class EmbeddedTwitterServer(
   }
 
   /* Lazy Fields */
-  lazy val httpAdminPort = getPort(twitterServer.adminHttpServer)
 
   lazy val httpAdminClient = {
     start()
@@ -108,7 +109,7 @@ class EmbeddedTwitterServer(
   /* Overrides */
 
   override protected def nonGuiceAppStarted(): Boolean = {
-    httpAdminPort != 0 && healthResponse(shouldBeHealthy = true).isReturn
+    isHealthy
   }
 
   override protected def logAppStartup() {
@@ -136,6 +137,16 @@ class EmbeddedTwitterServer(
 
   /* Public */
 
+  def assertHealthy(healthy: Boolean = true) {
+    healthResponse(healthy).get()
+  }
+
+  def isHealthy: Boolean = {
+    httpAdminPort != 0 &&
+      healthResponse(shouldBeHealthy = true).isReturn
+  }
+
+  def httpAdminPort = getPort(twitterServer.adminBoundAddress)
 
   def clearStats() = {
     inMemoryStatsReceiver.counters.clear()
@@ -167,10 +178,6 @@ class EmbeddedTwitterServer(
         info(f"$key%-70s = ${value()}")
       }
     }
-  }
-
-  def assertHealthy(healthy: Boolean = true) {
-    healthResponse(healthy)()
   }
 
   def assertAppStarted(started: Boolean = true) {
@@ -289,17 +296,6 @@ class EmbeddedTwitterServer(
 
   /* Private */
 
-  private def healthResponse(shouldBeHealthy: Boolean = true): Try[Response] = {
-    val expectedBody = if (shouldBeHealthy) "OK\n" else ""
-
-    Try {
-      httpGetAdmin(
-        "/health",
-        andExpect = Status.Ok,
-        withBody = expectedBody)
-    }
-  }
-
   private def receivedResponseStr(response: Response) = {
     "\n\nReceived Response:\n" + response.encodeString()
   }
@@ -384,6 +380,18 @@ class EmbeddedTwitterServer(
       headers + (HttpHeaders.ACCEPT -> accept.toString)
     else
       headers
+  }
+
+  private def healthResponse(shouldBeHealthy: Boolean = true): Try[Response] = {
+    val expectedBody = if (shouldBeHealthy) "OK\n" else ""
+
+    Try {
+      httpGetAdmin(
+        "/health",
+        andExpect = Status.Ok,
+        withBody = expectedBody,
+        suppress = !verbose)
+    }
   }
 
   //TODO: AF-567: Create inject-utils
