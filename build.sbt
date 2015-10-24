@@ -163,7 +163,7 @@ lazy val root = (project in file(".")).
 
     // START EXAMPLES
     helloWorld,
-    helloWorldHeroku,
+    //helloWorldHeroku, 2.11 only
     tinyUrl,
     streamingExample,
     twitterClone,
