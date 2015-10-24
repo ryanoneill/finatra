@@ -14,19 +14,14 @@ class StartupIntegrationTest extends Test {
 
   "startup" should {
     "ensure health check succeeds when guice config is good" in {
-      for (i <- 1 to 1) {
-        val server = new EmbeddedTwitterServer(new SimpleGuiceHttpTwitterServer)
-        server.assertHealthy()
+      val server = new EmbeddedTwitterServer(new SimpleGuiceHttpTwitterServer)
+      server.assertHealthy()
 
-        server.httpGetAdmin(
-          "/admin/server_info",
-          andExpect = Status.Ok)
+      server.httpGetAdmin(
+        "/admin/server_info",
+        andExpect = Status.Ok)
 
-        server.close()
-      }
-
-      /*System.gc()
-      Thread.sleep(200000)*/
+      server.close()
     }
 
     "non HTTP twitter-server passes health check" in {
