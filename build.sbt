@@ -3,15 +3,15 @@ import sbtunidoc.Plugin.UnidocKeys._
 import scoverage.ScoverageKeys.coverageExcludedPackages
 
 parallelExecution in ThisBuild := false
-fork in test := true
 
 lazy val projectVersion = "2.1.1-SNAPSHOT"
 
 lazy val buildSettings = Seq(
   version := projectVersion,
   scalaVersion := "2.11.7",
-  crossScalaVersions := Seq("2.10.6", "2.11.7")
-)
+  crossScalaVersions := Seq("2.10.6", "2.11.7"),
+  ivyScala := ivyScala.value.map(_.copy(overrideScalaVersion = true)),
+  fork in Test := true)
 
 lazy val versions = new {
   val commonsCodec = "1.9"
