@@ -5,8 +5,10 @@ import scoverage.ScoverageKeys.coverageExcludedPackages
 parallelExecution in ThisBuild := false
 fork in test := true
 
+lazy val projectVersion = "2.1.1-SNAPSHOT"
+
 lazy val buildSettings = Seq(
-  version := "2.1.1-SNAPSHOT",
+  version := projectVersion,
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.6", "2.11.7")
 )
@@ -135,9 +137,43 @@ lazy val commonServerBuildSettings = baseSettings ++ buildSettings ++ publishSet
 
 lazy val serverBuildSettings = commonServerBuildSettings ++ Seq(
   libraryDependencies ++= Seq(
-    "ch.qos.logback" % "logback-classic" % versions.logback
-  )
+    "ch.qos.logback" % "logback-classic" % versions.logback)
 )
+
+lazy val finatraModules = Seq(
+  benchmarks,
+  http,
+  httpclient,
+  injectApp,
+  injectCore,
+  injectModules,
+  injectRequestScope,
+  injectServer,
+  injectThriftClient,
+  jackson,
+  slf4j,
+  thrift,
+  utils)
+
+lazy val finatraExamples = Seq(
+  benchmarkServer,
+  exampleInjectJavaServer,
+  helloWorld,
+  //helloWorldHeroku, // 2.11 only
+  streamingExample,
+  thriftExampleIdl,
+  thriftExampleServer,
+  tinyUrl,
+  twitterClone)
+
+def aggregatedProjects = {
+  val projects =
+    if (projectVersion.endsWith("-SNAPSHOT"))
+      finatraModules ++ finatraExamples
+    else
+      finatraModules
+  projects.map(x => x: ProjectReference)
+}
 
 lazy val root = (project in file(".")).
   settings(unidocSettings).
@@ -145,34 +181,7 @@ lazy val root = (project in file(".")).
     organization := "com.twitter.finatra",
     moduleName := "finatra-root",
     unidocProjectFilter in(ScalaUnidoc, unidoc) := inAnyProject -- inProjects(benchmarks)
-  ).
-  aggregate(
-    injectCore,
-    injectModules,
-    injectApp,
-    injectServer,
-    injectRequestScope,
-    injectThriftClient,
-    utils,
-    jackson,
-    http,
-    httpclient,
-    slf4j,
-    thrift,
-    benchmarks, // LAST PROJECT
-
-    // START EXAMPLES
-    helloWorld,
-    //helloWorldHeroku, 2.11 only
-    tinyUrl,
-    streamingExample,
-    twitterClone,
-    benchmarkServer,
-    exampleInjectJavaServer,
-    thriftExampleIdl,
-    thriftExampleServer
-    // END EXAMPLES
-  )
+  ).aggregate(aggregatedProjects: _*)
 
 lazy val injectCore = (project in file("inject/inject-core")).
   settings(injectBuildSettings).
@@ -420,6 +429,7 @@ lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
   settings(
     name := "hello-world-heroku",
     moduleName := "hello-world-heroku",
+    scalaVersion := "2.11.7",
     crossScalaVersions := Seq(),
     libraryDependencies ++= Seq(
       "com.github.rlazoti" % "finagle-metrics_2.11" % "0.0.2" //2.11 only
@@ -435,8 +445,8 @@ lazy val helloWorldHeroku = (project in file("examples/hello-world-heroku")).
 lazy val helloWorld = (project in file("examples/hello-world")).
   settings(serverBuildSettings).
   settings(
-    name := "finatra-hello-world",
-    moduleName := "finatra-hello-world"
+    name := "hello-world",
+    moduleName := "hello-world"
   ).
   dependsOn(
     http,
@@ -461,8 +471,8 @@ lazy val streamingExample = (project in file("examples/streaming-example")).
 lazy val twitterClone = (project in file("examples/twitter-clone")).
   settings(serverBuildSettings).
   settings(
-    name := "finatra-twitter-clone",
-    moduleName := "finatra-twitter-clone",
+    name := "twitter-clone",
+    moduleName := "twitter-clone",
     coverageExcludedPackages := "<empty>;.*finatra.*" //TODO: Temp exclude some examples
   ).
   dependsOn(

@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.twitter.example</groupId>
-  <artifactId>finatra-hello-world</artifactId>
+  <artifactId>hello-world</artifactId>
   <version>2.1.1-SNAPSHOT</version>
 
   <properties>

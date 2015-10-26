@@ -1,4 +1,4 @@
-name := "finatra-hello-world"
+name := "hello-world"
 organization := "com.twitter.example"
 version := "2.1.1-SNAPSHOT"
 scalaVersion := "2.11.7"
