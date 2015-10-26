@@ -59,7 +59,7 @@ object EmbeddedTwitterServer {
  * @param maxStartupTimeSeconds Maximum seconds to wait for embedded server to start. If exceeded an Exception is thrown.
  */
 class EmbeddedTwitterServer(
-  val twitterServer: com.twitter.server.TwitterServer,
+  twitterServer: com.twitter.server.TwitterServer,
   clientFlags: Map[String, String] = Map(),
   extraArgs: Seq[String] = Seq(),
   waitForWarmup: Boolean = true,

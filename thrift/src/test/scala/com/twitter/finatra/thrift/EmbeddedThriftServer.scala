@@ -44,7 +44,8 @@ class EmbeddedThriftServer(
     useSocksProxy,
     skipAppMain,
     verbose = verbose,
-    maxStartupTimeSeconds = maxStartupTimeSeconds) with ThriftClient {
+    maxStartupTimeSeconds = maxStartupTimeSeconds)
+  with ThriftClient {
 
   protected def externalHostAndPort = {
     start()
