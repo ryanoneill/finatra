@@ -41,13 +41,13 @@ CMD="java -ea                     \
   -XX:+UseConcMarkSweepGC         \
   -XX:+CMSParallelRemarkEnabled   \
   -XX:+CMSClassUnloadingEnabled   \
-  -XX:ReservedCodeCacheSize=256M  \
+  -XX:ReservedCodeCacheSize=128m  \
   ${MAX_PERM_SIZE_JVM_ARG}        \
   -XX:SurvivorRatio=128           \
   -XX:MaxTenuringThreshold=0      \
   ${ELIMINATE_AUTOBOX_JVM_ARG}    \
-  -Xms1024M                       \
-  -Xmx3072M                       \
+  -Xms512M                        \
+  -Xmx768M                        \
   -server                         \
   -jar $sbtjar ${@:1}"
 
