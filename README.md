@@ -202,6 +202,7 @@ Authors
 * Eugene Ma <https://github.com/edma2>
 * Nikolaj Nielsen <https://github.com/nhnFreespirit>
 * Alex Leong <https://github.com/adleong>
+* Ryan O'Neill <https://github.com/ryanoneill>
 
 A full list of [contributors](https://github.com/twitter/finatra/graphs/contributors?type=a) can be found on GitHub.
 
