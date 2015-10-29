@@ -2,38 +2,57 @@
 
 set -xe
 
-# Publish local dependencies when not in a master branch
-FINATRA_BRANCH=$(git rev-parse --abrev-ref HEAD)
+function get_git_repo {
+  git clone https://github.com/twitter/$1.git --branch develop --depth 1
+}
 
-if [ "$FINATRA_BRANCH" != "master" ]; then
-  FINATRA_DIR=$(pwd)
-  FINATRA_SBT=$FINATRA_DIR/sbt
-  FINATRA_TMP_DIR=$(mktemp -d -t finatra.XXXXXXXXXX.tmp)
-  # util
-  cd $FINATRA_TMP_DIR
-  git clone https://github.com/twitter/util.git --branch develop --depth 1
-  cd util
-  $FINATRA_SBT ++$TRAVIS_SCALA_VERSION publishLocal
-  # ostrich
-  cd $FINATRA_TMP_DIR
-  git clone https://github.com/twitter/ostrich.git --branch develop --depth 1
-  cd ostrich
-  $FINATRA_SBT ++$TRAVIS_SCALA_VERSION publishLocal
-  # scrooge-core. Finagle depends on scrooge-core, the rest of scrooge depends on Finagle.
-  cd $FINATRA_TMP_DIR
-  git clone https://github.com/twitter/scrooge.git --branch develop --depth 1
-  cd scrooge
-  $FINATRA_SBT ++$TRAVIS_SCALA_VERSION scrooge-core/publishLocal
-  # finagle
-  cd $FINATRA_TMP_DIR
-  git clone https://github.com/twitter/finagle.git --branch develop --depth 1
-  cd finagle
-  $FINATRA_SBT ++$TRAVIS_SCALA_VERSION publishLocal
-  # twitter-server
-  git clone https://github.com/twitter/twitter-server.git --branch develop --depth 1
-  cd twitter-server
-  $FINATRA_SBT ++$TRAVIS_SCALA_VERSION publishLocal
-  # clean up
-  cd $FINATRA_TMP_DIR
-  rm -rf $FINATRA_TMP_DIR
-fi
+function publish_local {
+  $PROJECT_SBT ++$TRAVIS_SCALA_VERSION publishLocal
+}
+
+function publish_project_local {
+  $PROJECT_SBT ++$TRAVIS_SCALA_VERSION $1/publishLocal
+}
+
+function dependency {
+  cd $PROJECT_TMP_DIR
+  get_git_repo $1
+  cd $1
+  publish_local
+}
+
+function project_dependency {
+  cd $PROJECT_TMP_DIR
+  get_git_repo $1
+  cd $1
+  publish_project_local $2
+}
+
+function clean_up {
+  rm -rf $PROJECT_TMP_DIR
+}
+
+function setup {
+  PROJECT_DIR=$(pwd)
+  PROJECT_SBT=$PROJECT_DIR/sbt
+  PROJECT_TMP_DIR=$(mktemp -d -t $1.XXXXXXXXXX.tmp)
+}
+
+function run {
+  # Publish local dependencies when not in a master branch
+  PROJECT_BRANCH=$(git rev-parse --abrev-ref HEAD)
+
+  if [ "$PROJECT_BRANCH" != "master" ]; then
+    setup finatra
+
+    dependency util
+    dependency ostrich
+    project_dependency scrooge scrooge-core
+    dependency finagle
+    dependency twitter-server
+
+    clean_up
+  fi
+}
+
+run
