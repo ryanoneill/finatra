@@ -13,6 +13,7 @@ jdk:
 before_script:
   # default $SBT_OPTS is irrelevant to sbt lancher
   - unset SBT_OPTS
+  - chmod +x ./bin/travisci
   - ./bin/travisci
 
 script:
