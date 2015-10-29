@@ -1,6 +1,6 @@
 package com.twitter.finatra.httpclient
 
-import com.twitter.finagle.httpx.{Request, Response}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Httpx, Service}
 
 object RichHttpClient {
