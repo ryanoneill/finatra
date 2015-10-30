@@ -91,7 +91,7 @@ lazy val publishSettings = Seq(
 lazy val versions = new {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
   println("The branch is: " + branch)
-  val travisBranch = sys.env("TRAVIS_BRANCH")
+  val travisBranch = sys.env.getOrElse("TRAVIS_BRANCH", "")
   println("The travis branch is: " + travisBranch)
   val suffix = if (branch == "master" || travisBranch == "master") "" else "-SNAPSHOT"
   println("The suffix is: " + suffix)
