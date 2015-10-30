@@ -90,7 +90,9 @@ lazy val publishSettings = Seq(
 
 lazy val versions = new {
   val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
+  println("The branch is: " + branch)
   val suffix = if (branch == "master") "" else "-SNAPSHOT"
+  println("The suffix is: " + suffix)
 
   // Use SNAPSHOT versions of Twitter libraries on non-master branches
   val finagle = "6.30.0" + suffix
