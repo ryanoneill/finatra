@@ -1,7 +1,7 @@
 import com.twitter.scrooge.ScroogeSBT
 import sbt.Keys._
 import sbtunidoc.Plugin.UnidocKeys._
-import scoverage.ScoverageKeys.coverageExcludedPackages
+import ScoverageSbtPlugin.ScoverageKeys._
 
 parallelExecution in ThisBuild := false
 fork in ThisBuild := false
@@ -89,10 +89,18 @@ lazy val publishSettings = Seq(
 )
 
 lazy val versions = new {
+  val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
+  val suffix = if (branch == "master") "" else "-SNAPSHOT"
+
+  // Use SNAPSHOT versions of Twitter libraries on non-master branches
+  val finagle = "6.30.0" + suffix
+  val scrooge = "4.2.0" + suffix
+  val twitterServer = "1.15.0" + suffix
+  val util = "6.29.0" + suffix
+
   val commonsCodec = "1.9"
   val commonsFileupload = "1.3.1"
   val commonsIo = "2.4"
-  val finagle = "6.29.0"
   val grizzled = "1.0.2"
   val guava = "16.0.1"
   val guice = "3.0"
@@ -103,10 +111,7 @@ lazy val versions = new {
   val mustache = "0.8.18"
   val nscalaTime = "1.6.0"
   val servletApi = "2.5"
-  val scrooge = "4.1.0"
   val slf4j = "1.7.7"
-  val twitterServer = "1.14.0"
-  val util = "6.28.0"
 }
 
 lazy val injectBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
@@ -244,7 +249,7 @@ lazy val injectThriftClient = (project in file("inject/inject-thrift-client")).
       "com.twitter" %% "finagle-thriftmux" % versions.finagle,
       "com.twitter" %% "scrooge-core" % versions.scrooge,
       "com.github.nscala-time" %% "nscala-time" % versions.nscalaTime,
-      "com.twitter" %% "finagle-httpx" % versions.finagle % "test->compile")
+      "com.twitter" %% "finagle-http" % versions.finagle % "test->compile")
   ).
   dependsOn(
     injectCore,
@@ -263,7 +268,7 @@ lazy val utils = project.
       "com.fasterxml.jackson.core" % "jackson-annotations" % versions.jackson,
       "com.github.nscala-time" %% "nscala-time" % versions.nscalaTime,
       "com.google.guava" % "guava" % versions.guava,
-      "com.twitter" %% "finagle-httpx" % versions.finagle,
+      "com.twitter" %% "finagle-http" % versions.finagle,
       "commons-io" % "commons-io" % versions.commonsIo,
       "joda-time" % "joda-time" % versions.jodaTime,
       "org.clapper" %% "grizzled-slf4j" % versions.grizzled,
@@ -339,7 +344,7 @@ lazy val slf4j = project.
     name := "finatra-slf4j",
     moduleName := "finatra-slf4j",
     libraryDependencies ++= Seq(
-      "com.twitter" %% "finagle-httpx" % versions.finagle,
+      "com.twitter" %% "finagle-http" % versions.finagle,
       "org.slf4j" % "jcl-over-slf4j" % versions.slf4j,
       "org.slf4j" % "jul-to-slf4j" % versions.slf4j,
       "org.slf4j" % "log4j-over-slf4j" % versions.slf4j
