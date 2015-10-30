@@ -1,7 +1,7 @@
 import com.twitter.scrooge.ScroogeSBT
 import sbt.Keys._
 import sbtunidoc.Plugin.UnidocKeys._
-import scoverage.ScoverageKeys.coverageExcludedPackages
+import ScoverageSbtPlugin.ScoverageKeys._
 
 parallelExecution in ThisBuild := false
 fork in ThisBuild := false
