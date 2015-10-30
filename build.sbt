@@ -89,10 +89,18 @@ lazy val publishSettings = Seq(
 )
 
 lazy val versions = new {
+  val branch = Process("git" :: "rev-parse" :: "--abbrev-ref" :: "HEAD" :: Nil).!!.trim
+  val suffix = if (branch == "master") "" else "-SNAPSHOT"
+
+  // Use SNAPSHOT versions of Twitter libraries on non-master branches
+  val finagle = "6.30.0" + suffix
+  val scrooge = "4.2.0" + suffix
+  val twitterServer = "1.15.0" + suffix
+  val util = "6.29.0" + suffix
+
   val commonsCodec = "1.9"
   val commonsFileupload = "1.3.1"
   val commonsIo = "2.4"
-  val finagle = "6.30.0-SNAPSHOT"
   val grizzled = "1.0.2"
   val guava = "16.0.1"
   val guice = "3.0"
@@ -103,10 +111,7 @@ lazy val versions = new {
   val mustache = "0.8.18"
   val nscalaTime = "1.6.0"
   val servletApi = "2.5"
-  val scrooge = "4.2.0-SNAPSHOT"
   val slf4j = "1.7.7"
-  val twitterServer = "1.15.0-SNAPSHOT"
-  val util = "6.29.0-SNAPSHOT"
 }
 
 lazy val injectBuildSettings = baseSettings ++ buildSettings ++ publishSettings ++ Seq(
